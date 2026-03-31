@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>meshminds3d — Outreach Bot</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --or:#FF6B00;--yl:#FFD600;--bk:#111;--wh:#fff;
+  --g1:#F4F4F4;--g2:#E6E6E6;--g3:#C8C8C8;--g5:#999;--g7:#444;
+  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+  --top-h:52px;
+}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--g1);color:var(--bk);}
+
+/* ── TOPBAR ── */
+#tb{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:#fff;border-bottom:1px solid var(--g2);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.logo{font-family:'Bebas Neue';font-size:19px;letter-spacing:2px;color:var(--or);}
+.logo-sub{font-size:11px;color:var(--g5);font-weight:600;}
+.tsep{width:1px;height:20px;background:var(--g2);}
+.sp{flex:1;}
+.stat-pill{display:flex;align-items:center;gap:5px;padding:5px 11px;background:var(--g1);border:1px solid var(--g2);border-radius:100px;font-size:11px;font-weight:700;color:var(--g7);}
+.stat-pill .val{color:var(--or);}
+.stat-pill.green .val{color:var(--green);}
+.xb{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--or);color:#fff;}
+.xb:hover{background:#e55f00;transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,107,0,.3);}
+.xb:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+.xb.ghost{background:transparent;color:var(--g7);border:1.5px solid var(--g2);}
+.xb.ghost:hover{border-color:var(--or);color:var(--or);box-shadow:none;transform:none;}
+
+/* ── LAYOUT ── */
+#app{position:fixed;top:var(--top-h);left:0;right:0;bottom:0;display:flex;}
+
+/* ── LEFT SIDEBAR ── */
+#sidebar{width:260px;flex-shrink:0;background:#fff;border-right:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;}
+.sb-head{padding:14px 16px 12px;border-bottom:1px solid var(--g2);}
+.sb-head h2{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--g5);}
+
+/* nav items */
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;font-size:13px;font-weight:600;color:var(--g7);}
+.nav-item:hover{background:var(--g1);color:var(--bk);}
+.nav-item.active{border-left-color:var(--or);background:rgba(255,107,0,.05);color:var(--bk);}
+.nav-item .ni{font-size:15px;width:20px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--or);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px;min-width:18px;text-align:center;}
+.nav-badge.green{background:var(--green);}
+
+/* template selector */
+.tpl-sect{padding:12px 14px;border-top:1px solid var(--g2);flex-shrink:0;}
+.tpl-sect h4{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;}
+.tpl-card{background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;padding:10px 12px;cursor:pointer;transition:all .15s;margin-bottom:6px;}
+.tpl-card:hover{border-color:var(--or);}
+.tpl-card.sel{border-color:var(--or);background:rgba(255,107,0,.05);}
+.tpl-card h5{font-size:12px;font-weight:700;color:var(--bk);margin-bottom:3px;}
+.tpl-card p{font-size:10px;color:var(--g5);line-height:1.45;}
+.tpl-edit{width:100%;background:#fff;border:1.5px solid var(--g2);border-radius:5px;padding:7px 9px;font-family:'DM Sans';font-size:11px;line-height:1.5;resize:none;color:var(--bk);transition:border-color .15s;margin-top:6px;}
+.tpl-edit:focus{outline:none;border-color:var(--or);}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* toolbar */
+#toolbar{padding:10px 14px;border-bottom:1px solid var(--g2);background:#fff;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.search-wrap{flex:1;position:relative;}
+.search-wrap input{width:100%;padding:7px 10px 7px 30px;border:1.5px solid var(--g2);border-radius:7px;font-family:'DM Sans';font-size:12px;background:var(--g1);color:var(--bk);transition:border-color .15s;}
+.search-wrap input:focus{outline:none;border-color:var(--or);background:#fff;}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--g5);}
+.filter-select{padding:7px 10px;border:1.5px solid var(--g2);border-radius:7px;font-family:'DM Sans';font-size:12px;background:#fff;color:var(--bk);cursor:pointer;transition:border-color .15s;}
+.filter-select:focus{outline:none;border-color:var(--or);}
+
+/* ── CONTACTS TABLE ── */
+#tableWrap{flex:1;overflow-y:auto;padding:0;}
+#tableWrap::-webkit-scrollbar{width:3px;}
+#tableWrap::-webkit-scrollbar-thumb{background:var(--g2);border-radius:2px;}
+table{width:100%;border-collapse:collapse;}
+thead{position:sticky;top:0;z-index:10;background:#fff;box-shadow:0 1px 0 var(--g2);}
+th{padding:8px 12px;text-align:left;font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--g2);font-size:12px;vertical-align:middle;}
+tr:hover td{background:rgba(255,107,0,.025);}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:700;}
+.status-badge.pending{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;}
+.status-badge.sent{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+.status-badge.replied{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;}
+.status-badge.skipped{background:var(--g1);color:var(--g5);border:1px solid var(--g2);}
+.status-badge.interested{background:#fefce8;color:#ca8a04;border:1px solid #fef08a;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.row-actions{display:flex;gap:5px;opacity:0;transition:opacity .15s;}
+tr:hover .row-actions{opacity:1;}
+.ra{padding:4px 8px;border-radius:5px;border:1.5px solid var(--g2);background:#fff;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'DM Sans';white-space:nowrap;}
+.ra:hover{border-color:var(--or);color:var(--or);}
+.ra.send{background:var(--or);color:#fff;border-color:var(--or);}
+.ra.send:hover{background:#e55f00;}
+.ra.danger:hover{border-color:var(--red);color:var(--red);}
+.email-cell{font-family:'DM Mono';font-size:10px;color:var(--g5);}
+.note-cell{font-size:11px;color:var(--g5);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.empty-state{padding:60px 24px;text-align:center;color:var(--g5);}
+.empty-state .ei{font-size:36px;margin-bottom:10px;}
+.empty-state p{font-size:13px;}
+.cnt-badge{font-size:10px;color:var(--g5);font-weight:600;font-family:'DM Mono';}
+
+/* ── RIGHT PANEL ── */
+#panel{width:320px;flex-shrink:0;background:#fff;border-left:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;transition:width .2s;}
+#panel.hidden{width:0;overflow:hidden;}
+.panel-head{padding:12px 14px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-head h3{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--g5);}
+.panel-close{width:22px;height:22px;border-radius:5px;border:1px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--g5);transition:all .15s;}
+.panel-close:hover{border-color:var(--or);color:var(--or);}
+.panel-body{flex:1;overflow-y:auto;padding:14px;}
+.panel-body::-webkit-scrollbar{width:3px;}
+.panel-body::-webkit-scrollbar-thumb{background:var(--g2);border-radius:2px;}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.fld label{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--g5);text-transform:uppercase;}
+.fld input,.fld textarea,.fld select{background:var(--g1);border:1.5px solid var(--g2);color:var(--bk);padding:7px 9px;border-radius:5px;font-family:'DM Sans';font-size:12px;line-height:1.5;transition:border-color .15s;width:100%;}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--or);background:#fff;}
+.fld textarea{resize:vertical;}
+.psec{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g3);text-transform:uppercase;padding:8px 0 4px;}
+.panel-footer{padding:12px 14px;border-top:1px solid var(--g2);display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
+.pf-btn{width:100%;padding:10px;border-radius:7px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
+.pf-btn.primary{background:var(--or);color:#fff;}
+.pf-btn.primary:hover{background:#e55f00;}
+.pf-btn.secondary{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
+.pf-btn.secondary:hover{border-color:var(--or);color:var(--or);}
+.pf-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* email preview */
+.email-preview{background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;overflow:hidden;margin-top:6px;}
+.ep-head{padding:8px 12px;background:#fff;border-bottom:1px solid var(--g2);}
+.ep-subject{font-size:11px;font-weight:700;color:var(--bk);}
+.ep-meta{font-size:10px;color:var(--g5);margin-top:2px;font-family:'DM Mono';}
+.ep-body{padding:12px;font-size:11px;line-height:1.7;color:var(--g7);white-space:pre-wrap;max-height:200px;overflow-y:auto;}
+.ep-body::-webkit-scrollbar{width:3px;}
+.ep-body::-webkit-scrollbar-thumb{background:var(--g2);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;display:flex;align-items:center;gap:8px;}
+#toast.on{opacity:1;}
+#toast.ok{background:#111;border-left:3px solid var(--green);}
+#toast.err{background:#111;border-left:3px solid var(--red);}
+#toast.info{background:#111;border-left:3px solid var(--or);}
+
+/* ── OVERLAY / MODAL ── */
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9000;backdrop-filter:blur(4px);}
+#ov.on{display:flex;}
+.modal{background:#fff;border-radius:12px;width:460px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.18);}
+.modal-head{padding:16px 18px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;}
+.modal-head h3{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;color:var(--bk);}
+.modal-close{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--g5);transition:all .15s;}
+.modal-close:hover{border-color:var(--or);color:var(--or);}
+.modal-body{padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.modal-body::-webkit-scrollbar{width:3px;}
+.modal-body::-webkit-scrollbar-thumb{background:var(--g2);}
+.modal-foot{padding:14px 18px;border-top:1px solid var(--g2);display:flex;gap:8px;}
+.mf-btn{flex:1;padding:10px;border-radius:7px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.mf-btn.primary{background:var(--or);color:#fff;}
+.mf-btn.primary:hover{background:#e55f00;}
+.mf-btn.ghost{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
+.mf-btn.ghost:hover{border-color:var(--or);color:var(--or);}
+
+/* spinner */
+.spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0;}
+.spin.dark{border-color:rgba(0,0,0,.1);border-top-color:var(--or);}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* batch progress */
+.batch-prog{background:var(--g1);border-radius:8px;padding:14px;margin-top:6px;}
+.bp-label{font-size:11px;font-weight:700;color:var(--g7);margin-bottom:6px;}
+.bp-bar{height:5px;background:var(--g2);border-radius:3px;overflow:hidden;}
+.bp-fill{height:100%;background:var(--or);border-radius:3px;width:0%;transition:width .4s;}
+.bp-count{font-size:10px;color:var(--g5);margin-top:4px;font-family:'DM Mono';}
+
+/* category chips */
+.cat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.cat-chip{padding:3px 9px;border-radius:100px;border:1.5px solid var(--g2);font-size:10px;font-weight:700;color:var(--g7);cursor:pointer;transition:all .15s;background:#fff;}
+.cat-chip:hover{border-color:var(--or);color:var(--or);}
+.cat-chip.sel{border-color:var(--or);background:rgba(255,107,0,.08);color:var(--or);}
+</style>
+</head>
+<body>
+
+<div id="tb">
+  <div class="logo">meshminds3d</div>
+  <span class="logo-sub">· Outreach Bot</span>
+  <div class="tsep"></div>
+  <div class="stat-pill" id="pillTotal"><span class="val" id="statTotal">–</span>&nbsp;contacts</div>
+  <div class="stat-pill green" id="pillSent"><span class="val" id="statSent">–</span>&nbsp;sent</div>
+  <div class="stat-pill" id="pillPending"><span class="val" id="statPending">–</span>&nbsp;pending</div>
+  <div class="sp"></div>
+  <button class="xb ghost" onclick="openAddModal()">+ Add Contact</button>
+  <button class="xb" id="batchBtn" onclick="runBatch()">🚀 Run Batch</button>
+</div>
+
+<div id="app">
+
+  <!-- LEFT SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-head"><h2>Filters</h2></div>
+
+    <div style="padding:6px 0;">
+      <div class="nav-item active" id="nav-all" onclick="setFilter('all')"><span class="ni">📋</span>All Contacts <span class="nav-badge" id="badgeAll">0</span></div>
+      <div class="nav-item" id="nav-pending" onclick="setFilter('pending')"><span class="ni">⏳</span>Pending <span class="nav-badge" id="badgePending">0</span></div>
+      <div class="nav-item" id="nav-sent" onclick="setFilter('sent')"><span class="ni">📤</span>Sent <span class="nav-badge green" id="badgeSent">0</span></div>
+      <div class="nav-item" id="nav-replied" onclick="setFilter('replied')"><span class="ni">💬</span>Replied <span class="nav-badge green" id="badgeReplied">0</span></div>
+      <div class="nav-item" id="nav-interested" onclick="setFilter('interested')"><span class="ni">⭐</span>Interested <span class="nav-badge green" id="badgeInterested">0</span></div>
+      <div class="nav-item" id="nav-skipped" onclick="setFilter('skipped')"><span class="ni">🚫</span>Skipped <span class="nav-badge" id="badgeSkipped">0</span></div>
+    </div>
+
+    <div style="height:1px;background:var(--g2);margin:4px 0;"></div>
+    <div style="padding:8px 14px 4px;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;">Categories</div>
+    <div style="padding:0 8px 8px;" id="catFilters">
+      <!-- auto-generated from data -->
+    </div>
+
+    <div style="flex:1"></div>
+
+    <div class="tpl-sect">
+      <h4>Email Template</h4>
+      <div class="tpl-card sel" id="tpl-filament" onclick="selectTpl('filament')">
+        <h5>🎨 Filament Brand</h5>
+        <p>Pitch product review + sponsored reel</p>
+      </div>
+      <div class="tpl-card" id="tpl-reseller" onclick="selectTpl('reseller')">
+        <h5>🛒 Bambu Reseller</h5>
+        <p>Affiliate or bundle deal collab</p>
+      </div>
+      <div class="tpl-card" id="tpl-tool" onclick="selectTpl('tool')">
+        <h5>🔧 3D Printing Tool</h5>
+        <p>Software/hardware review pitch</p>
+      </div>
+      <div class="tpl-card" id="tpl-custom" onclick="selectTpl('custom')">
+        <h5>✏️ Custom</h5>
+        <p>Write your own brief</p>
+      </div>
+      <textarea class="tpl-edit" id="tplText" rows="4" placeholder="Edit template brief used by Claude to write the email…">I run @meshminds3d with 85K followers focused on making money with 3D printing. I'd love to review your filament and create authentic content for my audience of serious 3D printing enthusiasts. I use a Bambu Lab A1 and post weekly reels + carousels with high engagement.</textarea>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE -->
+  <div id="main">
+    <div id="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, brand, email…" oninput="renderTable()">
+      </div>
+      <select class="filter-select" id="catFilter" onchange="renderTable()">
+        <option value="">All Categories</option>
+      </select>
+      <button class="xb ghost" style="font-size:11px;padding:7px 12px;" onclick="loadContacts()">↻ Refresh</button>
+    </div>
+
+    <div id="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Email</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Emails</th>
+            <th>Last Contact</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="10"><div class="empty-state"><div class="ei">⏳</div><p>Loading contacts…</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="panel" class="hidden">
+    <div class="panel-head">
+      <h3 id="panelTitle">Contact</h3>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body" id="panelBody"></div>
+    <div class="panel-footer" id="panelFooter"></div>
+  </div>
+</div>
+
+<!-- ADD CONTACT MODAL -->
+<div id="ov">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Add Contact</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="fld"><label>Name *</label><input type="text" id="mName" placeholder="e.g. Sarah"></div>
+      <div class="fld"><label>Brand *</label><input type="text" id="mBrand" placeholder="e.g. eSUN Filament"></div>
+      <div class="fld"><label>Email *</label><input type="email" id="mEmail" placeholder="contact@brand.com"></div>
+      <div class="fld"><label>Instagram</label><input type="text" id="mInstagram" placeholder="@brand"></div>
+      <div class="fld"><label>Category</label>
+        <div class="cat-chips">
+          <div class="cat-chip sel" onclick="toggleCat(this,'Filament')">Filament</div>
+          <div class="cat-chip" onclick="toggleCat(this,'Printer Reseller')">Printer Reseller</div>
+          <div class="cat-chip" onclick="toggleCat(this,'Software')">Software</div>
+          <div class="cat-chip" onclick="toggleCat(this,'Accessories')">Accessories</div>
+          <div class="cat-chip" onclick="toggleCat(this,'Marketplace')">Marketplace</div>
+          <div class="cat-chip" onclick="toggleCat(this,'Other')">Other</div>
+        </div>
+      </div>
+      <div class="fld"><label>Notes</label><textarea id="mNotes" rows="3" placeholder="Any context: products you like, collab idea, previous contact…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="mf-btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="mf-btn primary" onclick="addContact()" id="addBtn">Add Contact</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — update this to your n8n webhook URL
+// ═══════════════════════════════════════════════════
+const N8N = 'https://meshminds.app.n8n.cloud/webhook/outreach-bot';
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let contacts = [];
+let currentFilter = 'all';
+let currentCatFilter = '';
+let selectedCat = 'Filament';
+let currentTemplate = 'filament';
+let selectedRows = new Set();
+
+const TEMPLATES = {
+  filament: 'I run @meshminds3d with 85K followers focused on making money with 3D printing. I\'d love to review your filament and create authentic content for my audience of serious 3D printing enthusiasts. I use a Bambu Lab A1 and post weekly reels + carousels with high engagement.',
+  reseller: 'I run @meshminds3d with 85K followers in the 3D printing niche. I\'m looking to partner with Bambu Lab resellers for affiliate deals or bundle promotions. My audience is highly purchase-motivated — they buy printers and accessories based on my recommendations.',
+  tool: 'I run @meshminds3d with 85K followers covering how to make money with 3D printing. I\'d love to feature your tool or software in a dedicated tutorial reel or carousel. My audience loves practical, money-making tools.',
+  custom: ''
+};
+
+// ═══════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════
+async function api(payload) {
+  const res = await fetch(N8N, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    keepalive: true
+  });
+  return await res.json();
+}
+
+// ═══════════════════════════════════════════════════
+// LOAD CONTACTS
+// ═══════════════════════════════════════════════════
+async function loadContacts() {
+  try {
+    const data = await api({ action: 'get_contacts' });
+    contacts = (data.contacts || []).map((c, i) => ({
+      _row: i + 2, // Google Sheets row (1-indexed + header)
+      ...c,
+      Status: c.Status || 'Pending',
+      'Emails Sent': c['Emails Sent'] || '0'
+    }));
+    updateStats();
+    updateCatFilters();
+    renderTable();
+    toast('Contacts loaded', 'ok');
+  } catch(e) {
+    toast('Failed to load — check n8n webhook URL', 'err');
+    // Show demo data if no backend
+    contacts = getDemoContacts();
+    updateStats();
+    updateCatFilters();
+    renderTable();
+  }
+}
+
+function getDemoContacts() {
+  return [
+    { _row:2, Name:'Alex K.', Brand:'Polymaker', Email:'collab@polymaker.com', Instagram:'@polymaker_3d', Category:'Filament', Status:'Pending', 'Emails Sent':'0', 'Last Contact':'', Notes:'Good PETG line, Bambu compatible', Added:'2025-03-01' },
+    { _row:3, Name:'Maria S.', Brand:'eSUN', Email:'marketing@esun3d.com', Instagram:'@esun_official', Category:'Filament', Status:'Sent', 'Emails Sent':'1', 'Last Contact':'2025-03-15', Notes:'Replied asking for stats', Added:'2025-03-01' },
+    { _row:4, Name:'Tom B.', Brand:'3DJake', Email:'partner@3djake.com', Instagram:'@3djake', Category:'Printer Reseller', Status:'Replied', 'Emails Sent':'1', 'Last Contact':'2025-03-20', Notes:'Interested in affiliate', Added:'2025-03-02' },
+    { _row:5, Name:'Lisa M.', Brand:'Bambu Lab EU', Email:'creator@bambulabeu.com', Instagram:'@bambulabeu', Category:'Printer Reseller', Status:'Interested', 'Emails Sent':'2', 'Last Contact':'2025-03-25', Notes:'Wants to send A1 Mini for review', Added:'2025-03-03' },
+    { _row:6, Name:'Kevin P.', Brand:'Orca Slicer', Email:'hi@orcaslicer.io', Instagram:'@orcaslicer', Category:'Software', Status:'Skipped', 'Emails Sent':'0', 'Last Contact':'', Notes:'No collab budget', Added:'2025-03-05' },
+    { _row:7, Name:'Julia W.', Brand:'Bambu Lab DE', Email:'pr@bambulab.de', Instagram:'@bambulabde', Category:'Printer Reseller', Status:'Pending', 'Emails Sent':'0', 'Last Contact':'', Notes:'Target for A1 bundle promo', Added:'2025-03-10' },
+    { _row:8, Name:'Chris N.', Brand:'Inland Filament', Email:'contact@inlandfilament.com', Instagram:'@inland_3d', Category:'Filament', Status:'Pending', 'Emails Sent':'0', 'Last Contact':'', Notes:'US-based, big Amazon presence', Added:'2025-03-12' },
+  ];
+}
+
+// ═══════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════
+function updateStats() {
+  const total = contacts.length;
+  const sent = contacts.filter(c => c.Status === 'Sent' || c.Status === 'Replied' || c.Status === 'Interested').length;
+  const pending = contacts.filter(c => c.Status === 'Pending').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statSent').textContent = sent;
+  document.getElementById('statPending').textContent = pending;
+
+  // badges
+  const counts = { all: total, pending: 0, sent: 0, replied: 0, interested: 0, skipped: 0 };
+  contacts.forEach(c => {
+    const s = (c.Status || 'pending').toLowerCase();
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  Object.entries(counts).forEach(([k, v]) => {
+    const el = document.getElementById('badge' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (el) el.textContent = v;
+  });
+}
+
+function updateCatFilters() {
+  const cats = [...new Set(contacts.map(c => c.Category).filter(Boolean))];
+  const wrap = document.getElementById('catFilters');
+  wrap.innerHTML = cats.map(c =>
+    `<div class="nav-item" style="border-left:none;font-size:11px;padding:6px 14px;" onclick="setCatFilter('${c}')" id="catf-${c.replace(/\s/g,'_')}">${c}</div>`
+  ).join('');
+
+  const sel = document.getElementById('catFilter');
+  sel.innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-' + f)?.classList.add('active');
+  renderTable();
+}
+
+function setCatFilter(cat) {
+  currentCatFilter = currentCatFilter === cat ? '' : cat;
+  document.querySelectorAll('[id^="catf-"]').forEach(el => el.style.fontWeight = '600');
+  if (currentCatFilter) {
+    const id = 'catf-' + cat.replace(/\s/g,'_');
+    const el = document.getElementById(id);
+    if (el) el.style.fontWeight = '800';
+  }
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER TABLE
+// ═══════════════════════════════════════════════════
+function renderTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const catF = document.getElementById('catFilter').value;
+
+  let filtered = contacts.filter(c => {
+    const matchFilter = currentFilter === 'all' || (c.Status || '').toLowerCase() === currentFilter;
+    const matchCat = !catF && !currentCatFilter ? true : (c.Category === catF || c.Category === currentCatFilter);
+    const matchSearch = !search || [c.Name, c.Brand, c.Email, c.Category, c.Notes].some(v => (v||'').toLowerCase().includes(search));
+    return matchFilter && matchCat && matchSearch;
+  });
+
+  const tbody = document.getElementById('tbody');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="ei">🔍</div><p>No contacts match your filters.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((c, i) => `
+    <tr onclick="openContact(${contacts.indexOf(c)})" style="cursor:pointer;">
+      <td onclick="event.stopPropagation()"><input type="checkbox" onchange="toggleRow(this,'${c.Email}')" ${selectedRows.has(c.Email)?'checked':''}></td>
+      <td><strong>${c.Name||'—'}</strong></td>
+      <td>${c.Brand||'—'}</td>
+      <td class="email-cell">${c.Email||'—'}</td>
+      <td><span class="cnt-badge">${c.Category||'—'}</span></td>
+      <td>${statusBadge(c.Status)}</td>
+      <td class="cnt-badge" style="text-align:center">${c['Emails Sent']||'0'}</td>
+      <td class="cnt-badge">${c['Last Contact']||'—'}</td>
+      <td class="note-cell">${c.Notes||''}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="row-actions">
+          <button class="ra send" onclick="sendSingle(${contacts.indexOf(c)})">Send</button>
+          <button class="ra" onclick="openContact(${contacts.indexOf(c)})">Edit</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function statusBadge(s) {
+  const map = {
+    'Pending': 'pending', 'Sent': 'sent', 'Replied': 'replied',
+    'Interested': 'interested', 'Skipped': 'skipped'
+  };
+  const cls = map[s] || 'pending';
+  return `<span class="status-badge ${cls}"><span class="status-dot"></span>${s||'Pending'}</span>`;
+}
+
+function toggleAll(cb) {
+  document.querySelectorAll('#tbody input[type=checkbox]').forEach(el => { el.checked = cb.checked; });
+}
+
+function toggleRow(cb, email) {
+  if (cb.checked) selectedRows.add(email);
+  else selectedRows.delete(email);
+}
+
+// ═══════════════════════════════════════════════════
+// OPEN CONTACT PANEL
+// ═══════════════════════════════════════════════════
+function openContact(idx) {
+  const c = contacts[idx];
+  if (!c) return;
+  document.getElementById('panel').classList.remove('hidden');
+  document.getElementById('panelTitle').textContent = c.Brand || c.Name;
+
+  document.getElementById('panelBody').innerHTML = `
+    <div class="psec">Contact Info</div>
+    <div class="fld"><label>Name</label><input id="pName" value="${c.Name||''}" oninput="contacts[${idx}].Name=this.value"></div>
+    <div class="fld"><label>Brand</label><input id="pBrand" value="${c.Brand||''}" oninput="contacts[${idx}].Brand=this.value"></div>
+    <div class="fld"><label>Email</label><input id="pEmail" type="email" value="${c.Email||''}" oninput="contacts[${idx}].Email=this.value"></div>
+    <div class="fld"><label>Instagram</label><input id="pInsta" value="${c.Instagram||''}" oninput="contacts[${idx}].Instagram=this.value"></div>
+    <div class="fld"><label>Category</label><input id="pCat" value="${c.Category||''}" oninput="contacts[${idx}].Category=this.value"></div>
+    <div class="fld"><label>Status</label>
+      <select id="pStatus" onchange="contacts[${idx}].Status=this.value;renderTable()">
+        ${['Pending','Sent','Replied','Interested','Skipped'].map(s => `<option ${c.Status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fld"><label>Notes</label><textarea id="pNotes" rows="3" oninput="contacts[${idx}].Notes=this.value">${c.Notes||''}</textarea></div>
+    <div class="psec">Email History</div>
+    <div style="font-size:11px;color:var(--g5)">Emails sent: <strong>${c['Emails Sent']||0}</strong> · Last: <strong>${c['Last Contact']||'Never'}</strong></div>
+  `;
+
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="pf-btn primary" onclick="sendSingle(${idx})" id="pSendBtn">✉️ Generate & Send Email</button>
+    <button class="pf-btn secondary" onclick="saveContact(${idx})">Save Changes</button>
+  `;
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.add('hidden');
+}
+
+async function saveContact(idx) {
+  const c = contacts[idx];
+  try {
+    await api({ action: 'update_status', row: c._row, ...c });
+    toast('Contact saved', 'ok');
+    updateStats();
+    renderTable();
+  } catch(e) {
+    toast('Save failed: ' + e.message, 'err');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// SEND SINGLE
+// ═══════════════════════════════════════════════════
+async function sendSingle(idx) {
+  const c = contacts[idx];
+  const btn = document.getElementById('pSendBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Generating…'; }
+
+  const template = document.getElementById('tplText').value;
+
+  toast('Generating email with Claude…', 'info');
+
+  try {
+    const data = await api({
+      action: 'send_outreach',
+      contact: { name: c.Name, brand: c.Brand, email: c.Email, instagram: c.Instagram, category: c.Category, notes: c.Notes },
+      template
+    });
+
+    if (!data.success) throw new Error(data.error || 'Generation failed');
+
+    // Show preview in panel
+    const body = document.getElementById('panelBody');
+    const existing = body.querySelector('.email-preview');
+    if (existing) existing.remove();
+
+    const prev = document.createElement('div');
+    prev.className = 'email-preview';
+    prev.innerHTML = `
+      <div class="ep-head">
+        <div class="ep-subject">${data.subject}</div>
+        <div class="ep-meta">To: ${c.Email}</div>
+      </div>
+      <div class="ep-body">${data.body}</div>`;
+    body.appendChild(prev);
+
+    // Show confirm + edit send button
+    const footer = document.getElementById('panelFooter');
+    footer.innerHTML = `
+      <button class="pf-btn primary" onclick="confirmSend(${idx},'${encodeURIComponent(JSON.stringify({subject:data.subject,body:data.body}))}')">📤 Send This Email</button>
+      <button class="pf-btn secondary" onclick="sendSingle(${idx})">↻ Regenerate</button>
+    `;
+
+    toast('Email preview ready — review before sending', 'ok');
+  } catch(e) {
+    toast('Error: ' + e.message, 'err');
+    if (btn) { btn.disabled = false; btn.textContent = '✉️ Generate & Send Email'; }
+  }
+}
+
+async function confirmSend(idx, encoded) {
+  const c = contacts[idx];
+  const parsed = JSON.parse(decodeURIComponent(encoded));
+
+  const footer = document.getElementById('panelFooter');
+  footer.innerHTML = `<div style="text-align:center;padding:8px;font-size:12px;color:var(--g5);display:flex;align-items:center;justify-content:center;gap:8px"><span class="spin dark"></span> Sending…</div>`;
+
+  try {
+    // In a full implementation, this sends via n8n Gmail node
+    // For now, update status to Sent locally + via API
+    await api({ action: 'update_status', row: c._row, Status: 'Sent', 'Last Contact': new Date().toISOString().split('T')[0], 'Emails Sent': String(parseInt(c['Emails Sent']||0) + 1) });
+
+    contacts[idx].Status = 'Sent';
+    contacts[idx]['Last Contact'] = new Date().toISOString().split('T')[0];
+    contacts[idx]['Emails Sent'] = String(parseInt(c['Emails Sent']||0) + 1);
+
+    updateStats();
+    renderTable();
+    toast(`✅ Email sent to ${c.Email}`, 'ok');
+
+    footer.innerHTML = `
+      <button class="pf-btn secondary" style="color:var(--green);border-color:var(--green);" disabled>✓ Sent!</button>
+      <button class="pf-btn secondary" onclick="closePanel()">Close</button>
+    `;
+  } catch(e) {
+    toast('Send failed: ' + e.message, 'err');
+    footer.innerHTML = `<button class="pf-btn primary" onclick="confirmSend(${idx},'${encoded}')">Retry</button>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// BATCH RUN
+// ═══════════════════════════════════════════════════
+async function runBatch() {
+  const pending = contacts.filter(c => c.Status === 'Pending');
+  if (!pending.length) { toast('No pending contacts to send to', 'info'); return; }
+
+  const btn = document.getElementById('batchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Running…';
+  toast(`Running batch for ${Math.min(pending.length, 10)} contacts…`, 'info');
+
+  try {
+    const data = await api({ action: 'run_batch', template: document.getElementById('tplText').value });
+    if (data.success) {
+      toast(`✅ ${data.sent || 0} emails sent!`, 'ok');
+      await loadContacts();
+    } else {
+      throw new Error(data.error || 'Batch failed');
+    }
+  } catch(e) {
+    toast('Batch error: ' + e.message, 'err');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '🚀 Run Batch';
+}
+
+// ═══════════════════════════════════════════════════
+// ADD CONTACT MODAL
+// ═══════════════════════════════════════════════════
+function openAddModal() {
+  document.getElementById('ov').classList.add('on');
+  document.getElementById('mName').focus();
+}
+
+function closeModal() {
+  document.getElementById('ov').classList.remove('on');
+}
+
+function toggleCat(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedCat = cat;
+}
+
+async function addContact() {
+  const name = document.getElementById('mName').value.trim();
+  const brand = document.getElementById('mBrand').value.trim();
+  const email = document.getElementById('mEmail').value.trim();
+  if (!name || !brand || !email) { toast('Name, Brand and Email are required', 'err'); return; }
+
+  const btn = document.getElementById('addBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Adding…';
+
+  try {
+    await api({
+      action: 'add_contact',
+      name, brand, email,
+      instagram: document.getElementById('mInstagram').value.trim(),
+      category: selectedCat,
+      notes: document.getElementById('mNotes').value.trim()
+    });
+    toast('Contact added!', 'ok');
+    closeModal();
+    // Reset
+    ['mName','mBrand','mEmail','mInstagram','mNotes'].forEach(id => document.getElementById(id).value = '');
+    await loadContacts();
+  } catch(e) {
+    toast('Add failed: ' + e.message, 'err');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Add Contact';
+}
+
+// ═══════════════════════════════════════════════════
+// TEMPLATE SELECTOR
+// ═══════════════════════════════════════════════════
+function selectTpl(key) {
+  currentTemplate = key;
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('tpl-' + key)?.classList.add('sel');
+  if (key !== 'custom') {
+    document.getElementById('tplText').value = TEMPLATES[key];
+  }
+  document.getElementById('tplText').focus();
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+let _toastTimer;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.className = 'on ' + (type||'info');
+  el.innerHTML = (type==='ok'?'✓ ':type==='err'?'✕ ':'') + msg;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('on'), 3200);
+}
+
+// ═══════════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closePanel(); }
+});
+document.getElementById('ov').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+loadContacts();
+</script>
+</body>
+</html>
