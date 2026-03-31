@@ -8,196 +8,219 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --or:#FF6B00;--yl:#FFD600;--bk:#111;--wh:#fff;
+  --or:#FF6B00;--bk:#111;--wh:#fff;
   --g1:#F4F4F4;--g2:#E6E6E6;--g3:#C8C8C8;--g5:#999;--g7:#444;
-  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
+  --green:#22c55e;--red:#ef4444;
   --top-h:52px;
 }
 html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--g1);color:var(--bk);}
 
-/* ── TOPBAR ── */
+/* TOPBAR */
 #tb{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:#fff;border-bottom:1px solid var(--g2);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .logo{font-family:'Bebas Neue';font-size:19px;letter-spacing:2px;color:var(--or);}
 .logo-sub{font-size:11px;color:var(--g5);font-weight:600;}
 .tsep{width:1px;height:20px;background:var(--g2);}
 .sp{flex:1;}
-.stat-pill{display:flex;align-items:center;gap:5px;padding:5px 11px;background:var(--g1);border:1px solid var(--g2);border-radius:100px;font-size:11px;font-weight:700;color:var(--g7);}
-.stat-pill .val{color:var(--or);}
-.stat-pill.green .val{color:var(--green);}
-.xb{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--or);color:#fff;}
-.xb:hover{background:#e55f00;transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,107,0,.3);}
+.xb{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--or);color:#fff;}
+.xb:hover{background:#e55f00;transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,107,0,.25);}
 .xb:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
 .xb.ghost{background:transparent;color:var(--g7);border:1.5px solid var(--g2);}
 .xb.ghost:hover{border-color:var(--or);color:var(--or);box-shadow:none;transform:none;}
+.xb.sm{padding:5px 10px;font-size:11px;}
 
-/* ── LAYOUT ── */
+/* LAYOUT */
 #app{position:fixed;top:var(--top-h);left:0;right:0;bottom:0;display:flex;}
 
-/* ── LEFT SIDEBAR ── */
-#sidebar{width:250px;flex-shrink:0;background:#fff;border-right:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;}
+/* SIDEBAR */
+#sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;}
+.sb-hd{padding:11px 14px 9px;border-bottom:1px solid var(--g2);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+.sb-hd h2{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--g5);}
+.proj-item{padding:9px 12px 9px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;position:relative;display:flex;flex-direction:column;gap:4px;}
+.proj-item:hover{background:var(--g1);}
+.proj-item.active{border-left-color:var(--or);background:rgba(255,107,0,.04);}
+.pi-name{font-size:12px;font-weight:700;color:var(--bk);display:flex;align-items:center;gap:5px;}
+.pi-stats{display:flex;gap:8px;}
+.pis{font-size:10px;color:var(--g5);font-weight:600;}
+.pis .v{font-weight:800;}.pis .v.or{color:var(--or);}.pis .v.gr{color:var(--green);}
+.pi-find{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:3px 7px;border-radius:5px;border:1.5px solid var(--g2);background:#fff;font-size:10px;font-weight:700;color:var(--g5);cursor:pointer;transition:all .15s;opacity:0;white-space:nowrap;}
+.proj-item:hover .pi-find{opacity:1;}
+.pi-find:hover,.pi-find.loading{border-color:var(--or);color:var(--or);opacity:1;}
+.add-proj{margin:8px 12px;padding:7px;border:1.5px dashed var(--g2);border-radius:6px;font-size:11px;font-weight:700;color:var(--g5);text-align:center;cursor:pointer;transition:all .15s;}
+.add-proj:hover{border-color:var(--or);color:var(--or);}
 
-/* tab switcher */
-.tab-bar{display:flex;border-bottom:1px solid var(--g2);flex-shrink:0;}
-.tab-btn{flex:1;padding:11px 6px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--g5);border-bottom:2px solid transparent;transition:all .15s;}
-.tab-btn.active{color:var(--or);border-bottom-color:var(--or);}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+#projHeader{padding:12px 16px 10px;border-bottom:1px solid var(--g2);background:#fff;flex-shrink:0;display:flex;align-items:center;gap:12px;}
+.ph-info{flex:1;min-width:0;}
+.ph-name{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;line-height:1;}
+.ph-sub{font-size:10px;color:var(--g5);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ph-stats{display:flex;gap:6px;}
+.ph-stat{text-align:center;padding:5px 9px;background:var(--g1);border:1px solid var(--g2);border-radius:6px;min-width:44px;}
+.ph-stat .sv{font-family:'Bebas Neue';font-size:17px;color:var(--bk);line-height:1;}
+.ph-stat .sl{font-size:9px;color:var(--g5);font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+.ph-stat.hi .sv{color:var(--or);}
+.ph-stat.hi{border-color:rgba(255,107,0,.25);background:rgba(255,107,0,.04);}
 
-.tab-pane{display:none;flex:1;flex-direction:column;overflow:hidden;}
-.tab-pane.active{display:flex;}
+/* progress */
+.prog-wrap{padding:0 16px 10px;background:#fff;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.prog-bar{height:3px;background:var(--g2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--or),#ff9040);border-radius:2px;transition:width .4s;}
+.prog-lbl{display:flex;justify-content:space-between;margin-top:3px;}
+.prog-lbl span{font-size:10px;color:var(--g5);font-weight:600;}
+.prog-lbl .pct{color:var(--or);font-weight:800;}
 
-/* contacts tab */
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;font-size:12px;font-weight:600;color:var(--g7);}
-.nav-item:hover{background:var(--g1);color:var(--bk);}
-.nav-item.active{border-left-color:var(--or);background:rgba(255,107,0,.05);color:var(--bk);}
-.nav-item .ni{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
-.nav-badge{margin-left:auto;background:var(--or);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px;min-width:18px;text-align:center;}
-.nav-badge.green{background:var(--green);}
+/* toolbar */
+#toolbar{padding:8px 14px;border-bottom:1px solid var(--g2);background:#fff;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.sw{flex:1;position:relative;}
+.sw input{width:100%;padding:6px 10px 6px 27px;border:1.5px solid var(--g2);border-radius:7px;font-family:'DM Sans';font-size:12px;background:var(--g1);color:var(--bk);transition:border-color .15s;}
+.sw input:focus{outline:none;border-color:var(--or);background:#fff;}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--g5);}
+.fcs{display:flex;gap:4px;}
+.fc{padding:4px 9px;border-radius:100px;border:1.5px solid var(--g2);font-size:11px;font-weight:700;color:var(--g5);cursor:pointer;transition:all .15s;background:#fff;}
+.fc.on{border-color:var(--or);color:var(--or);background:rgba(255,107,0,.05);}
 
-/* find leads tab */
-.fl-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
-.fl-body::-webkit-scrollbar{width:3px;}
-.fl-body::-webkit-scrollbar-thumb{background:var(--g2);}
-.fld{display:flex;flex-direction:column;gap:4px;}
-.fld label{font-size:10px;font-weight:700;letter-spacing:1.2px;color:var(--g5);text-transform:uppercase;}
-.fld input,.fld textarea,.fld select{background:var(--g1);border:1.5px solid var(--g2);color:var(--bk);padding:7px 9px;border-radius:5px;font-family:'DM Sans';font-size:12px;line-height:1.5;transition:border-color .15s;width:100%;}
-.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--or);background:#fff;}
-.fld textarea{resize:vertical;}
-.fsec{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g3);text-transform:uppercase;padding-top:4px;}
-
-/* keyword tags */
-.kw-wrap{display:flex;flex-wrap:wrap;gap:5px;padding:6px 0;}
-.kw-tag{display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,107,0,.08);border:1.5px solid rgba(255,107,0,.3);border-radius:100px;font-size:11px;font-weight:600;color:var(--or);}
-.kw-tag button{background:none;border:none;cursor:pointer;color:var(--or);font-size:12px;line-height:1;padding:0;display:flex;align-items:center;}
-.kw-tag button:hover{color:var(--red);}
-.kw-input-row{display:flex;gap:6px;}
-.kw-input-row input{flex:1;}
-.kw-add{padding:6px 10px;background:var(--or);color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
-
-/* source toggles */
-.src-row{display:flex;gap:6px;}
-.src-toggle{flex:1;padding:7px 5px;border-radius:6px;border:1.5px solid var(--g2);font-size:11px;font-weight:700;text-align:center;cursor:pointer;transition:all .15s;color:var(--g5);background:#fff;}
-.src-toggle.on{border-color:var(--or);background:rgba(255,107,0,.07);color:var(--or);}
-
-/* schedule display */
-.sched-card{background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;padding:10px 12px;font-size:11px;color:var(--g7);display:flex;align-items:center;gap:8px;}
-.sched-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 0 2px rgba(34,197,94,.2);}
-.sched-dot.off{background:var(--g3);box-shadow:none;}
-
-/* template area */
-.tpl-sect{padding:12px 14px;border-top:1px solid var(--g2);flex-shrink:0;}
-.tpl-sect h4{font-size:10px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-bottom:8px;}
-.tpl-card{background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;padding:9px 12px;cursor:pointer;transition:all .15s;margin-bottom:5px;}
-.tpl-card:hover{border-color:var(--or);}
-.tpl-card.sel{border-color:var(--or);background:rgba(255,107,0,.05);}
-.tpl-card h5{font-size:12px;font-weight:700;color:var(--bk);margin-bottom:2px;}
-.tpl-card p{font-size:10px;color:var(--g5);}
-.tpl-edit{width:100%;background:#fff;border:1.5px solid var(--g2);border-radius:5px;padding:7px 9px;font-family:'DM Sans';font-size:11px;line-height:1.5;resize:none;color:var(--bk);transition:border-color .15s;margin-top:6px;}
-.tpl-edit:focus{outline:none;border-color:var(--or);}
-
-/* ── MAIN ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-#toolbar{padding:10px 14px;border-bottom:1px solid var(--g2);background:#fff;display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.search-wrap{flex:1;position:relative;}
-.search-wrap input{width:100%;padding:7px 10px 7px 30px;border:1.5px solid var(--g2);border-radius:7px;font-family:'DM Sans';font-size:12px;background:var(--g1);color:var(--bk);transition:border-color .15s;}
-.search-wrap input:focus{outline:none;border-color:var(--or);background:#fff;}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--g5);}
-.filter-select{padding:7px 10px;border:1.5px solid var(--g2);border-radius:7px;font-family:'DM Sans';font-size:12px;background:#fff;color:var(--bk);cursor:pointer;}
-.filter-select:focus{outline:none;border-color:var(--or);}
-
-/* ── TABLE ── */
+/* TABLE */
 #tableWrap{flex:1;overflow-y:auto;}
 #tableWrap::-webkit-scrollbar{width:3px;}
 #tableWrap::-webkit-scrollbar-thumb{background:var(--g2);}
 table{width:100%;border-collapse:collapse;}
 thead{position:sticky;top:0;z-index:10;background:#fff;box-shadow:0 1px 0 var(--g2);}
-th{padding:8px 12px;text-align:left;font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;white-space:nowrap;}
-td{padding:8px 12px;border-bottom:1px solid var(--g2);font-size:12px;vertical-align:middle;}
+th{padding:7px 11px;text-align:left;font-size:9px;font-weight:800;letter-spacing:1.5px;color:var(--g5);text-transform:uppercase;white-space:nowrap;}
+td{padding:8px 11px;border-bottom:1px solid var(--g2);font-size:12px;vertical-align:middle;}
 tr:hover td{background:rgba(255,107,0,.02);}
-.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:10px;font-weight:700;}
-.status-badge.pending{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;}
-.status-badge.sent{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
-.status-badge.replied{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;}
-.status-badge.skipped{background:var(--g1);color:var(--g5);border:1px solid var(--g2);}
-.status-badge.interested{background:#fefce8;color:#ca8a04;border:1px solid #fef08a;}
-.status-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.row-actions{display:flex;gap:5px;opacity:0;transition:opacity .15s;}
-tr:hover .row-actions{opacity:1;}
-.ra{padding:4px 8px;border-radius:5px;border:1.5px solid var(--g2);background:#fff;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'DM Sans';}
+.sb{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:700;}
+.sb.pending{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;}
+.sb.sent{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+.sb.replied{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;}
+.sb.skipped{background:var(--g1);color:var(--g5);border:1px solid var(--g2);}
+.sb.interested{background:#fefce8;color:#ca8a04;border:1px solid #fef08a;}
+.sd{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.ra-wrap{display:flex;gap:4px;opacity:0;transition:opacity .15s;}
+tr:hover .ra-wrap{opacity:1;}
+.ra{padding:3px 7px;border-radius:5px;border:1.5px solid var(--g2);background:#fff;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'DM Sans';}
 .ra:hover{border-color:var(--or);color:var(--or);}
 .ra.send{background:var(--or);color:#fff;border-color:var(--or);}
 .ra.send:hover{background:#e55f00;}
-.email-cell{font-family:'DM Mono';font-size:10px;color:var(--g5);}
-.score-badge{font-family:'DM Mono';font-size:10px;font-weight:700;color:var(--or);}
-.source-tag{font-size:9px;color:var(--g5);font-weight:600;text-transform:uppercase;letter-spacing:1px;}
-.empty-state{padding:60px 24px;text-align:center;color:var(--g5);}
-.empty-state .ei{font-size:36px;margin-bottom:10px;}
-.empty-state p{font-size:13px;}
+.mono{font-family:'DM Mono';font-size:10px;color:var(--g5);}
+.score{font-family:'DM Mono';font-size:11px;font-weight:700;}
+.score.hi{color:var(--green);}.score.md{color:var(--or);}.score.lo{color:var(--g3);}
+.enrich-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;}
+.enrich-badge.done{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+.enrich-badge.raw{background:var(--g1);color:var(--g5);border:1px solid var(--g2);}
+.snippet-cell{font-size:10px;color:var(--g5);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.empty-st{padding:50px 20px;text-align:center;color:var(--g5);}
+.empty-st .ei{font-size:30px;margin-bottom:8px;}
+.empty-st p{font-size:12px;line-height:1.6;}
 
-/* ── RIGHT PANEL ── */
-#panel{width:320px;flex-shrink:0;background:#fff;border-left:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;transition:width .2s;}
+/* RIGHT PANEL */
+#panel{width:320px;flex-shrink:0;background:#fff;border-left:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;transition:width .18s;}
 #panel.hidden{width:0;overflow:hidden;}
-.panel-head{padding:12px 14px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.panel-head h3{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--g5);}
-.panel-close{width:22px;height:22px;border-radius:5px;border:1px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--g5);transition:all .15s;}
-.panel-close:hover{border-color:var(--or);color:var(--or);}
-.panel-body{flex:1;overflow-y:auto;padding:14px;}
-.panel-body::-webkit-scrollbar{width:3px;}
-.panel-body::-webkit-scrollbar-thumb{background:var(--g2);}
-.psec{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g3);text-transform:uppercase;padding:8px 0 4px;}
-.panel-footer{padding:12px 14px;border-top:1px solid var(--g2);display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
-.pf-btn{width:100%;padding:10px;border-radius:7px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
-.pf-btn.primary{background:var(--or);color:#fff;}
-.pf-btn.primary:hover{background:#e55f00;}
-.pf-btn.secondary{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
-.pf-btn.secondary:hover{border-color:var(--or);color:var(--or);}
-.pf-btn:disabled{opacity:.35;cursor:not-allowed;}
+.p-hd{padding:10px 14px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.p-hd h3{font-size:10px;letter-spacing:2px;color:var(--g5);text-transform:uppercase;font-weight:800;}
+.p-tabs{display:flex;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.p-tab{flex:1;padding:8px 4px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:none;background:transparent;color:var(--g5);border-bottom:2px solid transparent;transition:all .15s;}
+.p-tab.on{color:var(--or);border-bottom-color:var(--or);}
+.p-pane{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.p-pane.on{display:flex;}
+.pbody{flex:1;overflow-y:auto;padding:13px;}
+.pbody::-webkit-scrollbar{width:3px;}
+.pbody::-webkit-scrollbar-thumb{background:var(--g2);}
+.psec{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g3);text-transform:uppercase;padding:6px 0 3px;}
+.fld{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+.fld label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--g5);text-transform:uppercase;}
+.fld input,.fld textarea,.fld select{background:var(--g1);border:1.5px solid var(--g2);color:var(--bk);padding:6px 8px;border-radius:5px;font-family:'DM Sans';font-size:12px;line-height:1.45;transition:border-color .15s;width:100%;}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--or);background:#fff;}
+.fld textarea{resize:vertical;}
+.p-foot{padding:10px 13px;border-top:1px solid var(--g2);display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.pfb{width:100%;padding:8px;border-radius:6px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
+.pfb.primary{background:var(--or);color:#fff;}
+.pfb.primary:hover{background:#e55f00;}
+.pfb.secondary{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
+.pfb.secondary:hover{border-color:var(--or);color:var(--or);}
+.pfb:disabled{opacity:.35;cursor:not-allowed;}
 
 /* email preview */
-.email-preview{background:var(--g1);border:1.5px solid var(--g2);border-radius:7px;overflow:hidden;margin-top:6px;}
-.ep-head{padding:8px 12px;background:#fff;border-bottom:1px solid var(--g2);}
-.ep-subject{font-size:11px;font-weight:700;color:var(--bk);}
-.ep-meta{font-size:10px;color:var(--g5);margin-top:2px;font-family:'DM Mono';}
-.ep-body{padding:12px;font-size:11px;line-height:1.7;color:var(--g7);white-space:pre-wrap;max-height:200px;overflow-y:auto;}
-.ep-body::-webkit-scrollbar{width:3px;}
+.eprev{background:var(--g1);border:1.5px solid var(--g2);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.eprev-hd{padding:7px 10px;background:#fff;border-bottom:1px solid var(--g2);}
+.eprev-subj{font-size:11px;font-weight:700;}
+.eprev-meta{font-size:10px;color:var(--g5);margin-top:1px;font-family:'DM Mono';}
+.eprev-body{padding:10px;font-size:11px;line-height:1.65;color:var(--g7);white-space:pre-wrap;max-height:200px;overflow-y:auto;}
+.eprev-body::-webkit-scrollbar{width:3px;}
 
-/* ── FIND LEADS PROGRESS ── */
-.find-progress{background:var(--g1);border:1.5px solid var(--g2);border-radius:8px;padding:14px;margin-top:8px;display:none;}
-.find-progress.on{display:block;}
-.fp-title{font-size:11px;font-weight:700;color:var(--bk);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
-.fp-bar{height:4px;background:var(--g2);border-radius:2px;overflow:hidden;margin-bottom:6px;}
-.fp-fill{height:100%;background:var(--or);border-radius:2px;width:0%;transition:width .5s;}
-.fp-log{font-size:10px;color:var(--g5);font-family:'DM Mono';line-height:1.6;max-height:90px;overflow-y:auto;}
-.fp-log::-webkit-scrollbar{width:2px;}
+/* sent emails history */
+.sent-empty{padding:20px;text-align:center;font-size:11px;color:var(--g5);}
+.email-log-item{border-bottom:1px solid var(--g2);padding:10px 13px;cursor:pointer;transition:background .12s;}
+.email-log-item:hover{background:var(--g1);}
+.eli-date{font-size:10px;color:var(--g5);font-family:'DM Mono';}
+.eli-subj{font-size:12px;font-weight:700;margin-top:2px;}
+.eli-prev{font-size:10px;color:var(--g5);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.eli-expanded{background:var(--g1);padding:10px 13px;border-bottom:1px solid var(--g2);font-size:11px;line-height:1.65;color:var(--g7);white-space:pre-wrap;display:none;}
+.eli-expanded.on{display:block;}
 
-/* ── MODAL ── */
-#ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9000;backdrop-filter:blur(4px);}
+/* enrichment card */
+.enrich-card{background:rgba(255,107,0,.04);border:1.5px solid rgba(255,107,0,.18);border-radius:6px;padding:9px 11px;font-size:11px;line-height:1.6;color:var(--g7);}
+.enrich-card strong{color:var(--or);font-size:9px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;}
+.enrich-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.etag{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(255,107,0,.08);color:var(--or);border:1px solid rgba(255,107,0,.2);}
+.etag.grey{background:var(--g1);color:var(--g5);border-color:var(--g2);}
+
+/* SETTINGS PANEL */
+#settingsPanel{width:272px;flex-shrink:0;background:#fff;border-left:1px solid var(--g2);display:flex;flex-direction:column;overflow:hidden;transition:width .18s;}
+#settingsPanel.hidden{width:0;overflow:hidden;}
+.sp-hd{padding:10px 14px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sp-hd h3{font-size:10px;letter-spacing:2px;color:var(--g5);text-transform:uppercase;font-weight:800;}
+.sp-body{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;}
+.sp-body::-webkit-scrollbar{width:3px;}
+.sp-body::-webkit-scrollbar-thumb{background:var(--g2);}
+.sp-sec{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--g3);text-transform:uppercase;padding-top:4px;}
+.sp-save{margin:10px 13px;padding:8px;border-radius:6px;background:var(--or);color:#fff;border:none;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;width:calc(100% - 26px);}
+.sp-save:hover{background:#e55f00;}
+
+/* criteria pills */
+.crit-wrap{display:flex;flex-wrap:wrap;gap:4px;}
+.crit-pill{padding:3px 8px;border-radius:4px;border:1.5px solid var(--g2);font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;background:#fff;color:var(--g7);}
+.crit-pill.on{border-color:var(--or);background:rgba(255,107,0,.07);color:var(--or);}
+.crit-pill.red.on{border-color:var(--red);background:rgba(239,68,68,.06);color:var(--red);}
+
+/* API key area */
+.api-key-row{display:flex;flex-direction:column;gap:3px;}
+.api-key-row label{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--g5);text-transform:uppercase;}
+.api-key-row input{padding:6px 8px;border:1.5px solid var(--g2);border-radius:5px;font-family:'DM Mono';font-size:11px;background:var(--g1);color:var(--bk);width:100%;}
+.api-key-row input:focus{outline:none;border-color:var(--or);}
+
+/* MODAL */
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.38);display:none;align-items:center;justify-content:center;z-index:9000;backdrop-filter:blur(3px);}
 #ov.on{display:flex;}
-.modal{background:#fff;border-radius:12px;width:460px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.18);}
-.modal-head{padding:16px 18px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;}
-.modal-head h3{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;color:var(--bk);}
-.modal-close{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--g5);transition:all .15s;}
-.modal-close:hover{border-color:var(--or);color:var(--or);}
-.modal-body{padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
-.modal-body::-webkit-scrollbar{width:3px;}
-.modal-foot{padding:14px 18px;border-top:1px solid var(--g2);display:flex;gap:8px;}
-.mf-btn{flex:1;padding:10px;border-radius:7px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
-.mf-btn.primary{background:var(--or);color:#fff;}
-.mf-btn.primary:hover{background:#e55f00;}
-.mf-btn.ghost{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
-.cat-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
-.cat-chip{padding:3px 9px;border-radius:100px;border:1.5px solid var(--g2);font-size:10px;font-weight:700;color:var(--g7);cursor:pointer;transition:all .15s;background:#fff;}
-.cat-chip.sel{border-color:var(--or);background:rgba(255,107,0,.08);color:var(--or);}
+.modal{background:#fff;border-radius:11px;width:420px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.mhd{padding:13px 16px;border-bottom:1px solid var(--g2);display:flex;align-items:center;justify-content:space-between;}
+.mhd h3{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;}
+.mcl{width:22px;height:22px;border-radius:5px;border:1.5px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--g5);}
+.mcl:hover{border-color:var(--or);color:var(--or);}
+.mb{padding:14px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+.mb::-webkit-scrollbar{width:3px;}
+.mft{padding:11px 16px;border-top:1px solid var(--g2);display:flex;gap:7px;}
+.mfb{flex:1;padding:8px;border-radius:6px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.mfb.primary{background:var(--or);color:#fff;}
+.mfb.primary:hover{background:#e55f00;}
+.mfb.ghost{background:var(--g1);color:var(--g7);border:1.5px solid var(--g2);}
+.cc{padding:3px 8px;border-radius:100px;border:1.5px solid var(--g2);font-size:10px;font-weight:700;color:var(--g7);cursor:pointer;transition:all .12s;background:#fff;}
+.cc.sel{border-color:var(--or);background:rgba(255,107,0,.07);color:var(--or);}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+.ip{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px;}
+.ip-o{width:30px;height:30px;border-radius:5px;border:1.5px solid var(--g2);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;}
+.ip-o.sel{border-color:var(--or);background:rgba(255,107,0,.07);}
 
-/* ── TOAST ── */
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+/* TOAST */
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:8px 15px;border-radius:7px;font-size:12px;font-weight:700;z-index:9999;opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap;}
 #toast.on{opacity:1;}
 #toast.ok{border-left:3px solid var(--green);}
 #toast.err{border-left:3px solid var(--red);}
 #toast.info{border-left:3px solid var(--or);}
 
 /* spinner */
-.spin{display:inline-block;width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .7s linear infinite;flex-shrink:0;}
-.spin.dark{border-color:rgba(0,0,0,.1);border-top-color:var(--or);}
-@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:sp .7s linear infinite;flex-shrink:0;vertical-align:middle;}
+.spin.dk{border-color:rgba(0,0,0,.1);border-top-color:var(--or);}
+@keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -206,637 +229,834 @@ tr:hover .row-actions{opacity:1;}
   <div class="logo">meshminds3d</div>
   <span class="logo-sub">· Outreach Bot</span>
   <div class="tsep"></div>
-  <div class="stat-pill"><span class="val" id="statTotal">–</span>&nbsp;contacts</div>
-  <div class="stat-pill green"><span class="val" id="statSent">–</span>&nbsp;sent</div>
-  <div class="stat-pill"><span class="val" id="statPending">–</span>&nbsp;pending</div>
+  <span id="tbProj" style="font-size:12px;font-weight:700;color:var(--g7)">Select a project</span>
   <div class="sp"></div>
-  <button class="xb ghost" onclick="openAddModal()">+ Add Contact</button>
-  <button class="xb" id="batchBtn" onclick="runBatch()">🚀 Run Batch</button>
+  <button class="xb ghost sm" onclick="openAddContact()">+ Contact</button>
+  <button class="xb ghost sm" id="settingsBtn" onclick="toggleSettings()">⚙ Settings</button>
+  <button class="xb sm" id="batchBtn" onclick="runBatch()">🚀 Send Batch</button>
 </div>
 
 <div id="app">
 
-  <!-- LEFT SIDEBAR -->
+  <!-- SIDEBAR -->
   <div id="sidebar">
-    <div class="tab-bar">
-      <button class="tab-btn active" id="tbContacts" onclick="switchTab('contacts')">Contacts</button>
-      <button class="tab-btn" id="tbFindLeads" onclick="switchTab('findleads')">Find Leads</button>
-      <button class="tab-btn" id="tbTemplate" onclick="switchTab('template')">Template</button>
+    <div class="sb-hd">
+      <h2>Projects</h2>
     </div>
-
-    <!-- CONTACTS TAB -->
-    <div class="tab-pane active" id="paneContacts">
-      <div style="padding:6px 0;">
-        <div class="nav-item active" id="nav-all"        onclick="setFilter('all')">        <span class="ni">📋</span>All <span class="nav-badge" id="badgeAll">0</span></div>
-        <div class="nav-item" id="nav-pending"   onclick="setFilter('pending')">   <span class="ni">⏳</span>Pending <span class="nav-badge" id="badgePending">0</span></div>
-        <div class="nav-item" id="nav-sent"      onclick="setFilter('sent')">      <span class="ni">📤</span>Sent <span class="nav-badge green" id="badgeSent">0</span></div>
-        <div class="nav-item" id="nav-replied"   onclick="setFilter('replied')">   <span class="ni">💬</span>Replied <span class="nav-badge green" id="badgeReplied">0</span></div>
-        <div class="nav-item" id="nav-interested"onclick="setFilter('interested')"><span class="ni">⭐</span>Interested <span class="nav-badge green" id="badgeInterested">0</span></div>
-        <div class="nav-item" id="nav-skipped"   onclick="setFilter('skipped')">   <span class="ni">🚫</span>Skipped <span class="nav-badge" id="badgeSkipped">0</span></div>
+    <div id="projList"></div>
+    <div class="add-proj" onclick="openAddProject()">+ New Project</div>
+    <div style="flex:1"></div>
+    <!-- API keys in sidebar bottom -->
+    <div style="padding:10px 13px;border-top:1px solid var(--g2);display:flex;flex-direction:column;gap:6px;">
+      <div class="api-key-row">
+        <label>Perplexity API Key</label>
+        <input type="password" id="pplxKey" placeholder="pplx-…" oninput="pplxApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_pplx',this.value)">
       </div>
-      <div style="height:1px;background:var(--g2);margin:4px 0;"></div>
-      <div style="padding:6px 14px 4px;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;flex-shrink:0;">By Source</div>
-      <div style="padding:0 0 6px;" id="srcFilters"></div>
-      <div style="flex:1;"></div>
-    </div>
-
-    <!-- FIND LEADS TAB -->
-    <div class="tab-pane" id="paneFindLeads">
-      <div class="fl-body">
-
-        <div class="fsec">Search Sources</div>
-        <div class="src-row">
-          <div class="src-toggle on" id="srcGoogle" onclick="toggleSrc('google_search',this)">🔍 Google</div>
-          <div class="src-toggle on" id="srcMaps" onclick="toggleSrc('google_maps',this)">🗺 Maps</div>
-        </div>
-
-        <div class="fsec">Keywords</div>
-        <div style="font-size:10px;color:var(--g5);line-height:1.5;">What brands should it search for?</div>
-        <div class="kw-wrap" id="kwWrap"></div>
-        <div class="kw-input-row">
-          <input type="text" id="kwInput" placeholder="e.g. filament brand Germany" onkeydown="if(event.key==='Enter')addKeyword()">
-          <button class="kw-add" onclick="addKeyword()">+ Add</button>
-        </div>
-
-        <div class="fld">
-          <label>Location / Region</label>
-          <input type="text" id="flLocation" value="Europe" placeholder="e.g. Germany, Europe, global">
-        </div>
-
-        <div class="fld">
-          <label>Max leads per run</label>
-          <select id="flMax">
-            <option value="5">5 leads</option>
-            <option value="10" selected>10 leads</option>
-            <option value="20">20 leads</option>
-            <option value="50">50 leads</option>
-          </select>
-        </div>
-
-        <div class="fld">
-          <label>Min relevance score (1–10)</label>
-          <input type="number" id="flMinScore" value="5" min="1" max="10">
-        </div>
-
-        <div class="fsec">Schedule</div>
-        <div class="sched-card">
-          <div class="sched-dot" id="schedDot"></div>
-          <div>
-            <div style="font-weight:700;font-size:11px;" id="schedLabel">Daily at 9:00 AM (Mon–Fri)</div>
-            <div style="font-size:10px;color:var(--g5);">Runs automatically via n8n schedule</div>
-          </div>
-        </div>
-
-        <div class="find-progress" id="findProg">
-          <div class="fp-title"><span class="spin dark"></span><span id="fpTitle">Finding leads…</span></div>
-          <div class="fp-bar"><div class="fp-fill" id="fpFill"></div></div>
-          <div class="fp-log" id="fpLog"></div>
-        </div>
-
-        <button class="xb" style="width:100%;justify-content:center;margin-top:4px;" id="findBtn" onclick="findLeads()">🔍 Find Leads Now</button>
-
+      <div class="api-key-row">
+        <label>SerpAPI Key</label>
+        <input type="password" id="serpKeyInput" placeholder="sk-…" oninput="serpApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_serp',this.value)">
       </div>
     </div>
-
-    <!-- TEMPLATE TAB -->
-    <div class="tab-pane" id="paneTemplate">
-      <div style="padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
-        <div class="tpl-card sel" id="tpl-filament" onclick="selectTpl('filament')">
-          <h5>🎨 Filament Brand</h5>
-          <p>Product review + sponsored reel</p>
-        </div>
-        <div class="tpl-card" id="tpl-reseller" onclick="selectTpl('reseller')">
-          <h5>🛒 Bambu Reseller</h5>
-          <p>Affiliate or bundle deal collab</p>
-        </div>
-        <div class="tpl-card" id="tpl-tool" onclick="selectTpl('tool')">
-          <h5>🔧 3D Printing Tool</h5>
-          <p>Software/hardware review pitch</p>
-        </div>
-        <div class="tpl-card" id="tpl-custom" onclick="selectTpl('custom')">
-          <h5>✏️ Custom</h5>
-          <p>Write your own brief</p>
-        </div>
-        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:var(--g5);text-transform:uppercase;margin-top:4px;">Email Brief</div>
-        <textarea class="tpl-edit" id="tplText" rows="8">I run @meshminds3d with 85K followers focused on making money with 3D printing. I'd love to review your filament and create authentic content for my audience of serious 3D printing enthusiasts. I use a Bambu Lab A1 and post weekly reels + carousels with high engagement.</textarea>
-      </div>
-    </div>
-
   </div>
 
-  <!-- MAIN TABLE -->
+  <!-- MAIN -->
   <div id="main">
-    <div id="toolbar">
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search by name, brand, email…" oninput="renderTable()">
+    <div id="projHeader">
+      <div style="font-size:22px" id="phIcon">📋</div>
+      <div class="ph-info">
+        <div class="ph-name" id="phName">Select a project</div>
+        <div class="ph-sub" id="phSub">Choose a project from the sidebar</div>
       </div>
-      <select class="filter-select" id="catFilter" onchange="renderTable()">
-        <option value="">All Categories</option>
-      </select>
-      <button class="xb ghost" style="font-size:11px;padding:7px 12px;" onclick="loadContacts()">↻ Refresh</button>
+      <div class="ph-stats" id="phStats"></div>
+      <button class="xb sm" id="findBtn" onclick="findLeads()" disabled>🔍 +10 Leads</button>
+    </div>
+
+    <div class="prog-wrap" id="progWrap" style="display:none">
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="prog-lbl"><span id="progL">0 sent</span><span class="pct" id="progPct">0%</span><span id="progR">0 total</span></div>
+    </div>
+
+    <div id="toolbar">
+      <div class="sw"><span class="si">🔍</span><input id="searchInput" placeholder="Search contacts…" oninput="renderTable()"></div>
+      <div class="fcs">
+        <div class="fc on" id="fc-all"        onclick="setFilter('all')">All</div>
+        <div class="fc"    id="fc-pending"    onclick="setFilter('pending')">Pending</div>
+        <div class="fc"    id="fc-sent"       onclick="setFilter('sent')">Sent</div>
+        <div class="fc"    id="fc-replied"    onclick="setFilter('replied')">Replied</div>
+        <div class="fc"    id="fc-interested" onclick="setFilter('interested')">⭐</div>
+      </div>
+      <button class="xb ghost sm" onclick="loadContacts()">↻</button>
     </div>
 
     <div id="tableWrap">
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" id="selectAll" onchange="toggleAll(this)"></th>
-            <th>Name / Brand</th>
+            <th style="width:24px"><input type="checkbox" onchange="toggleAll(this)"></th>
+            <th>Brand</th>
             <th>Email</th>
-            <th>Category</th>
+            <th>Research</th>
             <th>Score</th>
-            <th>Source</th>
             <th>Status</th>
-            <th>Sent</th>
+            <th>Emails</th>
             <th>Last</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="tbody">
-          <tr><td colspan="10"><div class="empty-state"><div class="ei">⏳</div><p>Loading contacts…</p></div></td></tr>
+          <tr><td colspan="9"><div class="empty-st"><div class="ei">👈</div><p>Select a project to begin</p></div></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT: CONTACT PANEL (tabbed) -->
   <div id="panel" class="hidden">
-    <div class="panel-head">
-      <h3 id="panelTitle">Contact</h3>
-      <button class="panel-close" onclick="closePanel()">✕</button>
+    <div class="p-hd"><h3 id="panelTitle">Contact</h3><button class="mcl" onclick="closePanel()">✕</button></div>
+    <div class="p-tabs">
+      <button class="p-tab on" id="pt-info"  onclick="switchPTab('info')">Info</button>
+      <button class="p-tab"    id="pt-emails" onclick="switchPTab('emails')">Sent Emails</button>
     </div>
-    <div class="panel-body" id="panelBody"></div>
-    <div class="panel-footer" id="panelFooter"></div>
+    <!-- INFO PANE -->
+    <div class="p-pane on" id="pp-info">
+      <div class="pbody" id="panelBody"></div>
+      <div class="p-foot" id="panelFooter"></div>
+    </div>
+    <!-- EMAILS PANE -->
+    <div class="p-pane" id="pp-emails">
+      <div id="emailLog" style="flex:1;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- FAR RIGHT: PROJECT SETTINGS -->
+  <div id="settingsPanel" class="hidden">
+    <div class="sp-hd"><h3 id="spTitle">Settings</h3><button class="mcl" onclick="toggleSettings()">✕</button></div>
+    <div class="sp-body" id="spBody"></div>
+    <button class="sp-save" onclick="saveSettings()">Save Settings</button>
   </div>
 </div>
 
-<!-- ADD MODAL -->
+<!-- MODAL -->
 <div id="ov">
   <div class="modal">
-    <div class="modal-head">
-      <h3 id="modalTitle">Add Contact</h3>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody">
-      <div class="fld"><label>Name *</label><input type="text" id="mName" placeholder="e.g. Sarah"></div>
-      <div class="fld"><label>Brand *</label><input type="text" id="mBrand" placeholder="e.g. eSUN Filament"></div>
-      <div class="fld"><label>Email *</label><input type="email" id="mEmail" placeholder="contact@brand.com"></div>
-      <div class="fld"><label>Instagram</label><input type="text" id="mInstagram" placeholder="@brand"></div>
-      <div class="fld"><label>Category</label>
-        <div class="cat-chips">
-          <div class="cat-chip sel" onclick="toggleCat(this,'Filament')">Filament</div>
-          <div class="cat-chip" onclick="toggleCat(this,'Printer Reseller')">Printer Reseller</div>
-          <div class="cat-chip" onclick="toggleCat(this,'Software')">Software</div>
-          <div class="cat-chip" onclick="toggleCat(this,'Accessories')">Accessories</div>
-          <div class="cat-chip" onclick="toggleCat(this,'Other')">Other</div>
-        </div>
-      </div>
-      <div class="fld"><label>Notes</label><textarea id="mNotes" rows="3" placeholder="Context, collab idea, previous contact…"></textarea></div>
-    </div>
-    <div class="modal-foot">
-      <button class="mf-btn ghost" onclick="closeModal()">Cancel</button>
-      <button class="mf-btn primary" id="addBtn" onclick="addContact()">Add Contact</button>
-    </div>
+    <div class="mhd"><h3 id="modalTitle">—</h3><button class="mcl" onclick="closeModal()">✕</button></div>
+    <div class="mb" id="modalBody"></div>
+    <div class="mft" id="modalFoot"></div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // CONFIG
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 const N8N = 'https://meshminds.app.n8n.cloud/webhook/outreach-bot';
+let pplxApiKey = localStorage.getItem('mm_pplx') || '';
+let serpApiKey  = localStorage.getItem('mm_serp')  || '';
 
-const TEMPLATES = {
-  filament: 'I run @meshminds3d with 85K followers focused on making money with 3D printing. I\'d love to review your filament and create authentic content for my audience of serious 3D printing enthusiasts. I use a Bambu Lab A1 and post weekly reels + carousels with high engagement.',
-  reseller: 'I run @meshminds3d with 85K followers in the 3D printing niche. I\'m looking to partner with Bambu Lab resellers for affiliate deals or bundle promotions. My audience is highly purchase-motivated.',
-  tool: 'I run @meshminds3d with 85K followers covering how to make money with 3D printing. I\'d love to feature your tool or software in a dedicated tutorial reel or carousel.',
-  custom: ''
-};
+// ══════════════════════════════════════════════════
+// DEFAULT PROJECTS
+// ══════════════════════════════════════════════════
+const DEFAULT_PROJECTS = [
+  {
+    id: 'filament', name: 'Filament Brands', icon: '🎨',
+    keywords: ['filament brand 3D printing EU', 'PLA PETG filament manufacturer Germany', 'Bambu Lab compatible filament'],
+    location: 'Europe',
+    // Lead criteria
+    criteria: {
+      companySize: ['small','medium'],          // small / medium / large / enterprise
+      businessType: ['brand','manufacturer'],   // brand / manufacturer / reseller / shop / software / agency
+      collab: true,                             // only brands that do influencer collabs
+      shipsTo: 'Europe',                        // shipping region
+      hasSocial: true,                          // must have Instagram/social
+      avoidKeywords: ['alibaba','dropship'],    // exclude if these appear in research
+      minFollowers: '',                         // their own follower requirement (empty = any)
+      language: ['en','de'],                    // preferred site language
+    },
+    emailBrief: "I'm Daniel from @meshminds3d — 85K followers focused on making money with 3D printing on a Bambu Lab A1. I'd love to review your filament and create authentic, high-converting content. My audience actively buys based on my recommendations.",
+    maxLeads: 10, minScore: 6
+  },
+  {
+    id: 'accessories', name: 'Accessories Shops', icon: '🔩',
+    keywords: ['3D printer accessories shop EU', 'print farm supplies shop', '3D printing upgrades parts store'],
+    location: 'Europe',
+    criteria: {
+      companySize: ['small','medium','large'],
+      businessType: ['shop','reseller'],
+      collab: false,
+      shipsTo: 'Europe',
+      hasSocial: false,
+      avoidKeywords: [],
+      minFollowers: '',
+      language: ['en','de'],
+    },
+    emailBrief: "I'm Daniel from @meshminds3d — 85K followers in 3D printing. I create weekly content showing how to monetize printing. I'd love to feature your accessories in a dedicated reel or carousel and drive real traffic to your store.",
+    maxLeads: 10, minScore: 5
+  },
+  {
+    id: 'software', name: '3D Printing Tools', icon: '🔧',
+    keywords: ['3D printing software tool', 'slicer plugin 3D printing', '3D print management platform'],
+    location: 'Global',
+    criteria: {
+      companySize: ['small','medium','large','enterprise'],
+      businessType: ['software','brand'],
+      collab: false,
+      shipsTo: 'Global',
+      hasSocial: false,
+      avoidKeywords: ['free only','open source only'],
+      minFollowers: '',
+      language: ['en'],
+    },
+    emailBrief: "I'm Daniel from @meshminds3d — 85K followers who trust my tool picks. I create in-depth tutorials. I'd love to feature your software in a dedicated tutorial showing my audience exactly how it improves their workflow.",
+    maxLeads: 10, minScore: 6
+  }
+];
 
-// ═══════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════
-let contacts = [];
+let projects = JSON.parse(localStorage.getItem('mm_projects') || 'null') || DEFAULT_PROJECTS;
+let contacts  = {};   // projectId → array of contact objects
+let emailLogs = {};   // contactEmail → array of {date, subject, body}
+let currentPid   = null;
 let currentFilter = 'all';
-let selectedCat = 'Filament';
-let keywords = ['3D printing filament brand', 'Bambu Lab compatible filament EU', '3D printer accessories shop'];
-let activeSources = new Set(['google_search', 'google_maps']);
-let currentTab = 'contacts';
+let _panelIdx    = null;
+let _panelTab    = 'info';
 
-// ═══════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════
-function switchTab(tab) {
-  currentTab = tab;
-  ['contacts','findleads','template'].forEach(t => {
-    document.getElementById('pane' + t.charAt(0).toUpperCase() + t.slice(1).replace('leads','Leads'))?.classList.toggle('active', t === tab);
-    document.getElementById('tb' + t.charAt(0).toUpperCase() + t.slice(1).replace('leads','FindLeads'))?.classList.toggle('active', t === tab);
-  });
-  // fix: manual map tab id
-  document.getElementById('paneContacts').classList.toggle('active', tab==='contacts');
-  document.getElementById('paneFindLeads').classList.toggle('active', tab==='findleads');
-  document.getElementById('paneTemplate').classList.toggle('active', tab==='template');
-  document.getElementById('tbContacts').classList.toggle('active', tab==='contacts');
-  document.getElementById('tbFindLeads').classList.toggle('active', tab==='findleads');
-  document.getElementById('tbTemplate').classList.toggle('active', tab==='template');
+function saveProjects() { localStorage.setItem('mm_projects', JSON.stringify(projects)); }
+function getProj(id)   { return projects.find(p => p.id === id); }
+function curProj()     { return getProj(currentPid); }
+function curContacts() { return contacts[currentPid] || []; }
+
+// ══════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════
+function renderSidebar() {
+  document.getElementById('projList').innerHTML = projects.map(p => {
+    const cs = contacts[p.id] || [];
+    const sent = cs.filter(c => ['Sent','Replied','Interested'].includes(c.Status)).length;
+    const pending = cs.filter(c => c.Status === 'Pending').length;
+    return `<div class="proj-item${p.id===currentPid?' active':''}" onclick="selectProject('${p.id}')">
+      <div class="pi-name"><span>${p.icon}</span>${p.name}</div>
+      <div class="pi-stats">
+        <div class="pis"><span class="v">${cs.length}</span> total</div>
+        <div class="pis"><span class="v or">${pending}</span> pending</div>
+        <div class="pis"><span class="v gr">${sent}</span> sent</div>
+      </div>
+      <button class="pi-find" id="pif-${p.id}" onclick="event.stopPropagation();quickFind('${p.id}')" title="Find 10 new leads">+10</button>
+    </div>`;
+  }).join('');
+  // restore API key inputs
+  document.getElementById('pplxKey').value = pplxApiKey;
+  document.getElementById('serpKeyInput').value = serpApiKey;
 }
 
-// ═══════════════════════════════════════════════════
-// KEYWORDS
-// ═══════════════════════════════════════════════════
-function renderKeywords() {
-  document.getElementById('kwWrap').innerHTML = keywords.map((kw, i) =>
-    `<div class="kw-tag">${kw}<button onclick="removeKeyword(${i})">×</button></div>`
-  ).join('');
+// ══════════════════════════════════════════════════
+// SELECT PROJECT
+// ══════════════════════════════════════════════════
+async function selectProject(id) {
+  currentPid = id;
+  const p = getProj(id);
+  document.getElementById('tbProj').textContent = p.name;
+  document.getElementById('phIcon').textContent = p.icon;
+  document.getElementById('phName').textContent = p.name;
+  document.getElementById('phSub').textContent = p.keywords.slice(0,2).join(' · ');
+  document.getElementById('findBtn').disabled = false;
+  setFilter('all', false);
+  renderSidebar();
+  await loadContacts();
 }
 
-function addKeyword() {
-  const inp = document.getElementById('kwInput');
-  const v = inp.value.trim();
-  if (!v || keywords.includes(v)) { inp.value=''; return; }
-  keywords.push(v);
-  inp.value = '';
-  renderKeywords();
-}
-
-function removeKeyword(i) {
-  keywords.splice(i, 1);
-  renderKeywords();
-}
-
-function toggleSrc(src, el) {
-  if (activeSources.has(src)) { activeSources.delete(src); el.classList.remove('on'); }
-  else { activeSources.add(src); el.classList.add('on'); }
-}
-
-// ═══════════════════════════════════════════════════
-// FIND LEADS
-// ═══════════════════════════════════════════════════
-async function findLeads() {
-  if (!keywords.length) { toast('Add at least one keyword first', 'err'); return; }
-  if (!activeSources.size) { toast('Select at least one search source', 'err'); return; }
-
-  const btn = document.getElementById('findBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Searching…';
-
-  const prog = document.getElementById('findProg');
-  prog.classList.add('on');
-  const log = document.getElementById('fpLog');
-  const fill = document.getElementById('fpFill');
-  const title = document.getElementById('fpTitle');
-
-  function logLine(msg) {
-    log.innerHTML += `<div>→ ${msg}</div>`;
-    log.scrollTop = log.scrollHeight;
-  }
-
-  logLine(`Searching ${activeSources.size} source(s) for ${keywords.length} keyword(s)…`);
-  fill.style.width = '15%';
-  title.textContent = 'Querying SerpAPI…';
-
-  try {
-    const data = await api({
-      action: 'find_leads',
-      keywords,
-      location: document.getElementById('flLocation').value.trim() || 'Europe',
-      sources: [...activeSources],
-      maxResults: parseInt(document.getElementById('flMax').value),
-      minScore: parseInt(document.getElementById('flMinScore').value) || 5
-    });
-
-    fill.style.width = '70%';
-    title.textContent = 'Claude is scoring leads…';
-    logLine('Results received, filtering with Claude Haiku…');
-
-    await new Promise(r => setTimeout(r, 800)); // UX pause
-
-    fill.style.width = '100%';
-    title.textContent = 'Done!';
-
-    const count = data.count || 0;
-    logLine(`✅ ${count} new leads added to your sheet`);
-    toast(`Found ${count} new leads!`, 'ok');
-
-    if (count > 0) {
-      await loadContacts();
-    }
-  } catch(e) {
-    logLine(`❌ Error: ${e.message}`);
-    toast('Find leads failed: ' + e.message, 'err');
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '🔍 Find Leads Now';
-}
-
-// ═══════════════════════════════════════════════════
-// API
-// ═══════════════════════════════════════════════════
-async function api(payload) {
-  const res = await fetch(N8N, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    keepalive: true
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
-}
-
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // LOAD CONTACTS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 async function loadContacts() {
+  if (!currentPid) return;
   try {
-    const data = await api({ action: 'get_contacts' });
-    contacts = (data.contacts || []).map((c, i) => ({
-      _row: i + 2,
-      ...c,
-      Status: c.Status || 'Pending',
-      'Emails Sent': c['Emails Sent'] || '0'
-    }));
-    updateStats();
-    updateFilters();
-    renderTable();
+    const data = await api({ action:'get_contacts', projectId: currentPid });
+    contacts[currentPid] = (data.contacts||[]).map((c,i)=>({_row:i+2,...c,Status:c.Status||'Pending','Emails Sent':c['Emails Sent']||'0'}));
+    // restore email logs from contacts if stored in sheet
+    contacts[currentPid].forEach(c => {
+      if (c._emailLog) {
+        try { emailLogs[c.Email] = JSON.parse(c._emailLog); } catch(e){}
+      }
+    });
   } catch(e) {
-    // Demo fallback
-    contacts = getDemoContacts();
-    updateStats(); updateFilters(); renderTable();
-    toast('Using demo data — check n8n webhook URL', 'info');
+    contacts[currentPid] = getDemoContacts(currentPid);
   }
+  renderHeader();
+  renderTable();
+  renderSidebar();
 }
 
-function getDemoContacts() {
-  return [
-    { _row:2, Name:'Marketing Team', Brand:'Polymaker', Email:'collab@polymaker.com', Instagram:'@polymaker_3d', Category:'Filament', Status:'Pending', Score:'8', Source:'google_search', 'Emails Sent':'0', 'Last Contact':'', Notes:'Top filament brand, Bambu compatible' },
-    { _row:3, Name:'Marketing Team', Brand:'eSUN', Email:'marketing@esun3d.com', Instagram:'@esun_official', Category:'Filament', Status:'Sent', Score:'7', Source:'google_search', 'Emails Sent':'1', 'Last Contact':'2025-03-15', Notes:'Asked for follower stats' },
-    { _row:4, Name:'Tom B.', Brand:'3DJake', Email:'partner@3djake.com', Instagram:'@3djake', Category:'Printer Reseller', Status:'Replied', Score:'9', Source:'google_maps', 'Emails Sent':'1', 'Last Contact':'2025-03-20', Notes:'Interested in affiliate deal' },
-    { _row:5, Name:'Lisa M.', Brand:'Bambu Lab EU', Email:'creator@bambulabeu.com', Instagram:'@bambulabeu', Category:'Printer Reseller', Status:'Interested', Score:'10', Source:'manual', 'Emails Sent':'2', 'Last Contact':'2025-03-25', Notes:'Wants to send A1 Mini for review' },
-    { _row:6, Name:'Marketing Team', Brand:'Inland Filament', Email:'contact@inlandfilament.com', Instagram:'@inland_3d', Category:'Filament', Status:'Pending', Score:'6', Source:'google_search', 'Emails Sent':'0', 'Last Contact':'', Notes:'US-based, big Amazon presence' },
+function getDemoContacts(pid) {
+  const map = {
+    filament: [
+      { _row:2, Brand:'Polymaker', Name:'Marketing Team', Email:'collab@polymaker.com', Status:'Pending', Score:'8', Enriched:true, EnrichSummary:'Award-winning specialty filament brand. Active with creators on Instagram. Ships EU. ~50 employees. Runs regular creator campaigns.', EnrichTags:'EU shipping,Creator collabs,Instagram active,Medium brand', 'Emails Sent':'0', 'Last Contact':'' },
+      { _row:3, Brand:'eSUN', Name:'Marketing', Email:'marketing@esun3d.com', Status:'Sent', Score:'7', Enriched:true, EnrichSummary:'One of the largest filament OEMs. Bambu community staple. Has worked with YouTubers before. Global shipping.', EnrichTags:'Global shipping,Large brand,Creator friendly,Bambu compatible', 'Emails Sent':'1', 'Last Contact':'2025-03-15' },
+      { _row:4, Brand:'Bambu Lab EU', Name:'Creator Team', Email:'creator@bambulabeu.com', Status:'Interested', Score:'10', Enriched:true, EnrichSummary:'Official EU distributor. Actively seeks 3D printing creators. Sends hardware for review regularly. Very relevant.', EnrichTags:'EU,Hardware sends,Creator program,High priority', 'Emails Sent':'2', 'Last Contact':'2025-03-25' },
+    ],
+    accessories: [
+      { _row:2, Brand:'3DJake', Name:'Partner Team', Email:'partner@3djake.com', Status:'Replied', Score:'9', Enriched:true, EnrichSummary:"Europe's biggest 3D printing shop. Affiliate program available. Active socials. Responsive to creator outreach.", EnrichTags:'EU,Affiliate program,Shop,High priority', 'Emails Sent':'1', 'Last Contact':'2025-03-20' },
+      { _row:3, Brand:'Printed Solid', Name:'Marketing', Email:'hi@printedsolid.com', Status:'Pending', Score:'6', Enriched:false, EnrichSummary:'', EnrichTags:'', 'Emails Sent':'0', 'Last Contact':'' },
+    ],
+    software: [
+      { _row:2, Brand:'Orca Slicer', Name:'Team', Email:'hi@orcaslicer.io', Status:'Pending', Score:'6', Enriched:true, EnrichSummary:'Popular open-source slicer fork. Community-driven. Free tool — collab potential limited but exposure possible.', EnrichTags:'Open source,Free,Community driven,Software', 'Emails Sent':'0', 'Last Contact':'' },
+    ]
+  };
+  // seed a demo email log
+  emailLogs['creator@bambulabeu.com'] = [
+    { date:'2025-03-10', subject:'Collab idea for @meshminds3d × Bambu Lab EU 🖨️', body:'Hey — I\'m Daniel, running @meshminds3d with 85K followers in the 3D printing space.\n\nI use a Bambu Lab A1 daily and my audience is deeply engaged with Bambu hardware. I think we could do something really authentic together — whether that\'s a printer review, a sponsored reel, or a bundle giveaway.\n\nWould love to connect and explore what makes sense.\n\nDaniel\n@meshminds3d' },
+    { date:'2025-03-20', subject:'Following up — @meshminds3d × Bambu Lab EU', body:'Hey again — just wanted to follow up on my last message. We just hit 85K and engagement has been strong lately. Happy to share our media kit if useful.\n\nDaniel' }
   ];
+  return map[pid] || [];
 }
 
-// ═══════════════════════════════════════════════════
-// STATS & FILTERS
-// ═══════════════════════════════════════════════════
-function updateStats() {
-  document.getElementById('statTotal').textContent = contacts.length;
-  document.getElementById('statSent').textContent = contacts.filter(c => ['Sent','Replied','Interested'].includes(c.Status)).length;
-  document.getElementById('statPending').textContent = contacts.filter(c => c.Status === 'Pending').length;
-
-  const counts = { all: contacts.length, pending:0, sent:0, replied:0, interested:0, skipped:0 };
-  contacts.forEach(c => { const s=(c.Status||'pending').toLowerCase(); if(counts[s]!==undefined)counts[s]++; });
-  Object.entries(counts).forEach(([k,v]) => {
-    const el = document.getElementById('badge'+k.charAt(0).toUpperCase()+k.slice(1));
-    if(el) el.textContent = v;
-  });
+// ══════════════════════════════════════════════════
+// HEADER STATS
+// ══════════════════════════════════════════════════
+function renderHeader() {
+  const cs = curContacts();
+  const total = cs.length, sent = cs.filter(c=>['Sent','Replied','Interested'].includes(c.Status)).length;
+  const replied = cs.filter(c=>['Replied','Interested'].includes(c.Status)).length;
+  const pending = cs.filter(c=>c.Status==='Pending').length;
+  const pct = total ? Math.round(sent/total*100) : 0;
+  document.getElementById('phStats').innerHTML = `
+    <div class="ph-stat hi"><div class="sv">${pending}</div><div class="sl">Pending</div></div>
+    <div class="ph-stat"><div class="sv">${sent}</div><div class="sl">Sent</div></div>
+    <div class="ph-stat"><div class="sv">${replied}</div><div class="sl">Replied</div></div>
+    <div class="ph-stat"><div class="sv">${total}</div><div class="sl">Total</div></div>`;
+  const pw = document.getElementById('progWrap');
+  if (total) {
+    pw.style.display = 'block';
+    document.getElementById('progFill').style.width = pct+'%';
+    document.getElementById('progL').textContent = sent+' sent';
+    document.getElementById('progPct').textContent = pct+'%';
+    document.getElementById('progR').textContent = total+' total';
+  } else { pw.style.display = 'none'; }
 }
 
-function updateFilters() {
-  // Categories dropdown
-  const cats = [...new Set(contacts.map(c=>c.Category).filter(Boolean))];
-  const sel = document.getElementById('catFilter');
-  sel.innerHTML = '<option value="">All Categories</option>' + cats.map(c=>`<option>${c}</option>`).join('');
-
-  // Source filters in sidebar
-  const srcs = [...new Set(contacts.map(c=>c.Source).filter(Boolean))];
-  const srcWrap = document.getElementById('srcFilters');
-  srcWrap.innerHTML = srcs.map(s =>
-    `<div class="nav-item" style="font-size:11px;padding:6px 14px;border-left:none;" onclick="setCatFilter('${s}')">${srcIcon(s)} ${s}</div>`
-  ).join('');
-}
-
-function srcIcon(s) {
-  if(s==='google_search') return '🔍';
-  if(s==='google_maps') return '🗺';
-  if(s==='manual') return '✏️';
-  return '📌';
-}
-
-function setFilter(f) {
+// ══════════════════════════════════════════════════
+// TABLE
+// ══════════════════════════════════════════════════
+function setFilter(f, redraw=true) {
   currentFilter = f;
-  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(el=>el.classList.remove('active'));
-  document.getElementById('nav-'+f)?.classList.add('active');
-  renderTable();
+  ['all','pending','sent','replied','interested'].forEach(k =>
+    document.getElementById('fc-'+k)?.classList.toggle('on', k===f));
+  if (redraw) renderTable();
 }
 
-let activeCatFilter = '';
-function setCatFilter(cat) {
-  activeCatFilter = activeCatFilter === cat ? '' : cat;
-  renderTable();
-}
-
-// ═══════════════════════════════════════════════════
-// RENDER TABLE
-// ═══════════════════════════════════════════════════
 function renderTable() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const catF = document.getElementById('catFilter').value;
-
-  const filtered = contacts.filter(c => {
-    const matchFilter = currentFilter === 'all' || (c.Status||'').toLowerCase() === currentFilter;
-    const matchCat = (!catF && !activeCatFilter) || c.Category === catF || c.Category === activeCatFilter || c.Source === activeCatFilter;
-    const matchSearch = !search || [c.Name, c.Brand, c.Email, c.Category, c.Notes, c.Source].some(v=>(v||'').toLowerCase().includes(search));
-    return matchFilter && matchCat && matchSearch;
+  const cs = curContacts();
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const rows = cs.filter(c => {
+    const mf = currentFilter==='all' || (c.Status||'').toLowerCase()===currentFilter;
+    const ms = !q || [c.Brand,c.Name,c.Email,c.EnrichSummary,c.EnrichTags].some(v=>(v||'').toLowerCase().includes(q));
+    return mf && ms;
   });
 
   const tbody = document.getElementById('tbody');
-  if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="ei">🔍</div><p>No contacts match.</p></div></td></tr>`;
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-st"><div class="ei">${currentPid?'📭':'👈'}</div><p>${currentPid?'No contacts yet. Hit 🔍 +10 Leads to find some.':'Select a project.'}</p></div></td></tr>`;
     return;
   }
-
-  tbody.innerHTML = filtered.map(c => {
-    const idx = contacts.indexOf(c);
-    const score = c.Score ? `<span class="score-badge">${c.Score}/10</span>` : '—';
-    const src = c.Source ? `<span class="source-tag">${srcIcon(c.Source)} ${c.Source}</span>` : '—';
+  tbody.innerHTML = rows.map(c => {
+    const idx = curContacts().indexOf(c);
+    const sc = parseInt(c.Score||0);
+    const scCls = sc>=8?'hi':sc>=5?'md':'lo';
+    const enrichBadge = c.Enriched
+      ? `<span class="enrich-badge done">✓ researched</span>`
+      : `<span class="enrich-badge raw">snippet</span>`;
+    const emailCount = parseInt(c['Emails Sent']||0);
+    const hasEmails = emailCount > 0;
     return `<tr onclick="openContact(${idx})" style="cursor:pointer">
       <td onclick="event.stopPropagation()"><input type="checkbox"></td>
-      <td><strong>${c.Brand||'—'}</strong><div style="font-size:10px;color:var(--g5)">${c.Name||''}</div></td>
-      <td class="email-cell">${c.Email||'—'}</td>
-      <td style="font-size:10px;color:var(--g7)">${c.Category||'—'}</td>
-      <td>${score}</td>
-      <td>${src}</td>
-      <td>${statusBadge(c.Status)}</td>
-      <td style="text-align:center;font-size:11px;color:var(--g5)">${c['Emails Sent']||'0'}</td>
-      <td style="font-size:10px;color:var(--g5);font-family:'DM Mono'">${c['Last Contact']||'—'}</td>
+      <td><strong>${c.Brand||'—'}</strong><div class="mono" style="margin-top:1px">${c.Name||''}</div></td>
+      <td class="mono">${c.Email||'—'}</td>
+      <td>${enrichBadge}<div class="snippet-cell" style="margin-top:2px" title="${esc(c.EnrichSummary||c.Snippet||'')}">${c.EnrichSummary||c.Snippet||'—'}</div></td>
+      <td><span class="score ${scCls}">${c.Score||'—'}</span></td>
+      <td>${badge(c.Status)}</td>
+      <td style="text-align:center">
+        ${hasEmails ? `<span style="cursor:pointer;color:var(--or);font-weight:700;font-size:11px;" onclick="event.stopPropagation();openContact(${idx},true)">${emailCount} ✉</span>` : `<span style="color:var(--g3);font-size:11px">0</span>`}
+      </td>
+      <td class="mono">${c['Last Contact']||'—'}</td>
       <td onclick="event.stopPropagation()">
-        <div class="row-actions">
+        <div class="ra-wrap">
           <button class="ra send" onclick="sendSingle(${idx})">Send</button>
-          <button class="ra" onclick="openContact(${idx})">Edit</button>
+          <button class="ra" onclick="openContact(${idx})">View</button>
         </div>
       </td>
     </tr>`;
   }).join('');
 }
 
-function statusBadge(s) {
-  const map = {'Pending':'pending','Sent':'sent','Replied':'replied','Interested':'interested','Skipped':'skipped'};
-  return `<span class="status-badge ${map[s]||'pending'}"><span class="status-dot"></span>${s||'Pending'}</span>`;
+function badge(s) {
+  const m={Pending:'pending',Sent:'sent',Replied:'replied',Interested:'interested',Skipped:'skipped'};
+  return `<span class="sb ${m[s]||'pending'}"><span class="sd"></span>${s||'Pending'}</span>`;
+}
+function toggleAll(cb) { document.querySelectorAll('#tbody input[type=checkbox]').forEach(e=>e.checked=cb.checked); }
+function esc(v) { return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+// ══════════════════════════════════════════════════
+// CONTACT PANEL — tabbed: Info / Sent Emails
+// ══════════════════════════════════════════════════
+function switchPTab(tab) {
+  _panelTab = tab;
+  ['info','emails'].forEach(t => {
+    document.getElementById('pt-'+t).classList.toggle('on', t===tab);
+    document.getElementById('pp-'+t).classList.toggle('on', t===tab);
+  });
+  if (tab === 'emails' && _panelIdx !== null) renderEmailLog(_panelIdx);
 }
 
-function toggleAll(cb) { document.querySelectorAll('#tbody input[type=checkbox]').forEach(el=>el.checked=cb.checked); }
-
-// ═══════════════════════════════════════════════════
-// CONTACT PANEL
-// ═══════════════════════════════════════════════════
-function openContact(idx) {
-  const c = contacts[idx];
+function openContact(idx, goEmails=false) {
+  _panelIdx = idx;
+  const c = curContacts()[idx];
+  closeSettings();
   document.getElementById('panel').classList.remove('hidden');
   document.getElementById('panelTitle').textContent = c.Brand || c.Name;
 
+  // Info pane
   document.getElementById('panelBody').innerHTML = `
-    <div class="psec">Contact Info</div>
-    <div class="fld"><label>Name</label><input value="${c.Name||''}" oninput="contacts[${idx}].Name=this.value"></div>
-    <div class="fld"><label>Brand</label><input value="${c.Brand||''}" oninput="contacts[${idx}].Brand=this.value"></div>
-    <div class="fld"><label>Email</label><input type="email" value="${c.Email||''}" oninput="contacts[${idx}].Email=this.value"></div>
-    <div class="fld"><label>Instagram</label><input value="${c.Instagram||''}" oninput="contacts[${idx}].Instagram=this.value"></div>
-    <div class="fld"><label>Category</label><input value="${c.Category||''}" oninput="contacts[${idx}].Category=this.value"></div>
+    <div class="psec">Contact</div>
+    <div class="fld"><label>Brand</label><input value="${esc(c.Brand)}" oninput="curContacts()[${idx}].Brand=this.value"></div>
+    <div class="fld"><label>Name</label><input value="${esc(c.Name)}" oninput="curContacts()[${idx}].Name=this.value"></div>
+    <div class="fld"><label>Email</label><input type="email" value="${esc(c.Email)}" oninput="curContacts()[${idx}].Email=this.value"></div>
     <div class="fld"><label>Status</label>
-      <select onchange="contacts[${idx}].Status=this.value;renderTable()">
+      <select onchange="curContacts()[${idx}].Status=this.value;renderTable();renderHeader();renderSidebar()">
         ${['Pending','Sent','Replied','Interested','Skipped'].map(s=>`<option ${c.Status===s?'selected':''}>${s}</option>`).join('')}
       </select>
     </div>
-    <div class="fld"><label>Notes</label><textarea rows="3" oninput="contacts[${idx}].Notes=this.value">${c.Notes||''}</textarea></div>
-    <div class="psec">Lead Info</div>
-    <div style="font-size:11px;color:var(--g5);line-height:1.7;">
-      Source: <strong>${srcIcon(c.Source||'')} ${c.Source||'manual'}</strong><br>
-      Score: <strong style="color:var(--or)">${c.Score||'—'}/10</strong><br>
-      Emails sent: <strong>${c['Emails Sent']||0}</strong> · Last: <strong>${c['Last Contact']||'Never'}</strong>
-    </div>
+    ${c.Enriched ? `
+    <div class="psec">Perplexity Research</div>
+    <div class="enrich-card">
+      <strong>AI research summary</strong>
+      ${c.EnrichSummary||''}
+      ${c.EnrichTags ? `<div class="enrich-tags">${c.EnrichTags.split(',').map(t=>`<span class="etag">${t.trim()}</span>`).join('')}</div>` : ''}
+    </div>` : `
+    <div class="psec">Context</div>
+    <div style="font-size:11px;color:var(--g5);line-height:1.6">No Perplexity research yet. Research will run automatically when leads are found with a Perplexity API key set.</div>`}
+    <div class="psec">Notes</div>
+    <div class="fld"><textarea rows="2" oninput="curContacts()[${idx}].Notes=this.value">${esc(c.Notes||'')}</textarea></div>
+  `;
+  document.getElementById('panelFooter').innerHTML = `
+    <button class="pfb primary" id="pSendBtn" onclick="sendSingle(${idx})">✉️ Generate Personalised Email</button>
+    <button class="pfb secondary" onclick="saveContact(${idx})">Save</button>
   `;
 
-  document.getElementById('panelFooter').innerHTML = `
-    <button class="pf-btn primary" id="pSendBtn" onclick="sendSingle(${idx})">✉️ Generate & Send Email</button>
-    <button class="pf-btn secondary" onclick="saveContact(${idx})">Save Changes</button>
-  `;
+  switchPTab(goEmails ? 'emails' : 'info');
 }
 
-function closePanel() { document.getElementById('panel').classList.add('hidden'); }
+function closePanel() { document.getElementById('panel').classList.add('hidden'); _panelIdx = null; }
 
 async function saveContact(idx) {
-  const c = contacts[idx];
+  const c = curContacts()[idx];
   try {
-    await api({ action: 'update_status', row: c._row, ...c });
-    toast('Saved', 'ok'); updateStats(); renderTable();
-  } catch(e) { toast('Save failed', 'err'); }
+    await api({ action:'update_status', projectId:currentPid, row:c._row, ...c });
+    toast('Saved','ok'); renderTable(); renderHeader(); renderSidebar();
+  } catch(e) { toast('Save failed','err'); }
 }
 
-// ═══════════════════════════════════════════════════
-// SEND SINGLE
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// SENT EMAIL LOG
+// ══════════════════════════════════════════════════
+function renderEmailLog(idx) {
+  const c = curContacts()[idx];
+  const logs = emailLogs[c.Email] || [];
+  const el = document.getElementById('emailLog');
+  if (!logs.length) {
+    el.innerHTML = `<div class="sent-empty">No emails sent yet.<br>Hit "Generate Personalised Email" to start.</div>`;
+    return;
+  }
+  el.innerHTML = logs.slice().reverse().map((log, i) => `
+    <div class="email-log-item" onclick="toggleEmailExpand(${i})">
+      <div class="eli-date">${log.date}</div>
+      <div class="eli-subj">${log.subject}</div>
+      <div class="eli-prev">${log.body.slice(0,80)}…</div>
+    </div>
+    <div class="eli-expanded" id="elog-${i}">${log.body}</div>
+  `).join('');
+}
+
+function toggleEmailExpand(i) {
+  const el = document.getElementById('elog-'+i);
+  if (el) el.classList.toggle('on');
+}
+
+// ══════════════════════════════════════════════════
+// SEND EMAIL
+// ══════════════════════════════════════════════════
 async function sendSingle(idx) {
-  const c = contacts[idx];
+  const c = curContacts()[idx];
+  const p = curProj();
+  _panelIdx = idx;
+  if (document.getElementById('panel').classList.contains('hidden')) openContact(idx);
+  switchPTab('info');
   const btn = document.getElementById('pSendBtn');
-  if (btn) { btn.disabled=true; btn.innerHTML='<span class="spin"></span> Generating…'; }
-  if (!document.getElementById('panel').classList.contains('hidden')) openContact(idx);
-  toast('Generating with Claude…', 'info');
+  if (btn) { btn.disabled=true; btn.innerHTML='<span class="spin"></span> Writing…'; }
+  toast('Writing personalised email with Claude…','info');
 
   try {
     const data = await api({
-      action: 'send_outreach',
-      contact: { name:c.Name, brand:c.Brand, email:c.Email, instagram:c.Instagram, category:c.Category, notes:c.Notes },
-      template: document.getElementById('tplText').value
+      action:'send_outreach', projectId:currentPid,
+      contact:{ name:c.Name, brand:c.Brand, email:c.Email, category:c.Category||'',
+                enrichSummary:c.EnrichSummary||c.Snippet||'', enrichTags:c.EnrichTags||'' },
+      emailBrief: p?.emailBrief || ''
     });
-    if (!data.success) throw new Error(data.error || 'Failed');
+    if (!data.success) throw new Error(data.error||'Failed');
 
+    // Show preview
     const body = document.getElementById('panelBody');
-    document.querySelector('.email-preview')?.remove();
+    document.querySelector('.eprev')?.remove();
     const prev = document.createElement('div');
-    prev.className = 'email-preview';
-    prev.innerHTML = `<div class="ep-head"><div class="ep-subject">${data.subject}</div><div class="ep-meta">To: ${c.Email}</div></div><div class="ep-body">${data.body}</div>`;
-    body.appendChild(prev);
+    prev.className = 'eprev';
+    prev.innerHTML = `
+      <div class="eprev-hd"><div class="eprev-subj">${data.subject}</div><div class="eprev-meta">To: ${c.Email}</div></div>
+      <div class="eprev-body">${data.body}</div>`;
+    body.insertBefore(prev, body.firstChild);
 
     const enc = encodeURIComponent(JSON.stringify({subject:data.subject,body:data.body}));
     document.getElementById('panelFooter').innerHTML = `
-      <button class="pf-btn primary" onclick="confirmSend(${idx},'${enc}')">📤 Confirm & Send</button>
-      <button class="pf-btn secondary" onclick="sendSingle(${idx})">↻ Regenerate</button>`;
-    toast('Preview ready — confirm to send', 'ok');
+      <button class="pfb primary" onclick="confirmSend(${idx},'${enc}')">📤 Confirm & Send</button>
+      <button class="pfb secondary" onclick="sendSingle(${idx})">↻ Regenerate</button>`;
+    toast('Preview ready — confirm to send','ok');
   } catch(e) {
-    toast('Error: '+e.message, 'err');
-    if(btn){btn.disabled=false;btn.textContent='✉️ Generate & Send Email';}
+    toast('Error: '+e.message,'err');
+    if(btn){btn.disabled=false;btn.innerHTML='✉️ Generate Personalised Email';}
   }
 }
 
-async function confirmSend(idx, encoded) {
-  const c = contacts[idx];
-  document.getElementById('panelFooter').innerHTML = `<div style="text-align:center;padding:8px;font-size:12px;color:var(--g5);display:flex;align-items:center;justify-content:center;gap:8px"><span class="spin dark"></span> Sending…</div>`;
+async function confirmSend(idx, enc) {
+  const c = curContacts()[idx];
+  const parsed = JSON.parse(decodeURIComponent(enc));
+  document.getElementById('panelFooter').innerHTML = `<div style="padding:8px;text-align:center;font-size:12px;color:var(--g5);display:flex;align-items:center;justify-content:center;gap:6px"><span class="spin dk"></span>Sending…</div>`;
   try {
-    await api({ action:'update_status', row:c._row, Status:'Sent', 'Last Contact':new Date().toISOString().split('T')[0], 'Emails Sent':String(parseInt(c['Emails Sent']||0)+1) });
-    contacts[idx].Status='Sent';
-    contacts[idx]['Last Contact']=new Date().toISOString().split('T')[0];
-    contacts[idx]['Emails Sent']=String(parseInt(c['Emails Sent']||0)+1);
-    updateStats(); renderTable();
-    toast(`✅ Sent to ${c.Email}`, 'ok');
-    document.getElementById('panelFooter').innerHTML=`<button class="pf-btn secondary" style="color:var(--green);border-color:var(--green);" disabled>✓ Sent!</button><button class="pf-btn secondary" onclick="closePanel()">Close</button>`;
-  } catch(e) {
-    toast('Send failed','err');
-  }
+    const d = today();
+    await api({ action:'update_status', projectId:currentPid, row:c._row, Status:'Sent', 'Last Contact':d, 'Emails Sent':String(parseInt(c['Emails Sent']||0)+1) });
+    // Store in local email log
+    if (!emailLogs[c.Email]) emailLogs[c.Email] = [];
+    emailLogs[c.Email].push({ date:d, subject:parsed.subject, body:parsed.body });
+    c.Status='Sent'; c['Last Contact']=d; c['Emails Sent']=String(parseInt(c['Emails Sent']||0)+1);
+    renderTable(); renderHeader(); renderSidebar();
+    toast(`✅ Sent to ${c.Email}`,'ok');
+    document.getElementById('panelFooter').innerHTML=`
+      <button class="pfb secondary" style="color:var(--green);border-color:var(--green);" disabled>✓ Sent!</button>
+      <button class="pfb secondary" onclick="switchPTab('emails')">View Sent Emails →</button>`;
+  } catch(e) { toast('Send failed','err'); }
 }
 
-// ═══════════════════════════════════════════════════
+function today() { return new Date().toISOString().split('T')[0]; }
+
+// ══════════════════════════════════════════════════
 // BATCH
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 async function runBatch() {
-  const pending = contacts.filter(c=>c.Status==='Pending');
-  if (!pending.length) { toast('No pending contacts','info'); return; }
+  const p = curProj();
+  if (!p) { toast('Select a project first','err'); return; }
+  if (!curContacts().filter(c=>c.Status==='Pending').length) { toast('No pending contacts','info'); return; }
   const btn = document.getElementById('batchBtn');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Running…';
-  toast(`Sending batch of up to 10…`, 'info');
+  toast('Sending batch…','info');
   try {
-    const data = await api({ action:'run_batch', template:document.getElementById('tplText').value });
-    toast(`✅ ${data.sent||0} emails sent`, 'ok');
+    const data = await api({ action:'run_batch', projectId:currentPid, emailBrief:p.emailBrief });
+    toast(`✅ ${data.sent||0} emails sent`,'ok');
     await loadContacts();
   } catch(e) { toast('Batch failed: '+e.message,'err'); }
-  btn.disabled=false; btn.innerHTML='🚀 Run Batch';
+  btn.disabled=false; btn.innerHTML='🚀 Send Batch';
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+// FIND LEADS — one click
+// ══════════════════════════════════════════════════
+async function findLeads() {
+  if (!currentPid) return;
+  const btn = document.getElementById('findBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Finding…';
+  toast(`Searching + researching leads for ${curProj().name}…`,'info');
+  await _findLeads(currentPid);
+  btn.disabled=false; btn.innerHTML='🔍 +10 Leads';
+}
+
+async function quickFind(pid) {
+  const btn = document.getElementById('pif-'+pid);
+  if(btn){btn.classList.add('loading');btn.innerHTML='<span class="spin dk"></span>';}
+  await _findLeads(pid);
+  if(btn){btn.classList.remove('loading');btn.innerHTML='+10';}
+}
+
+async function _findLeads(pid) {
+  const p = getProj(pid);
+  try {
+    const data = await api({
+      action:'find_leads', projectId:pid,
+      keywords:p.keywords, location:p.location,
+      criteria:p.criteria,
+      maxResults:p.maxLeads||10, minScore:p.minScore||5,
+      serpKey:serpApiKey||undefined, pplxKey:pplxApiKey||undefined,
+      usePplx: !!pplxApiKey
+    });
+    const count = data.count||0;
+    toast(`✅ ${count} new leads added${pplxApiKey?' + researched with Perplexity':''}`, 'ok');
+    if (pid===currentPid) await loadContacts();
+    else {
+      try {
+        const d2 = await api({action:'get_contacts',projectId:pid});
+        contacts[pid]=(d2.contacts||[]).map((c,i)=>({_row:i+2,...c,Status:c.Status||'Pending','Emails Sent':c['Emails Sent']||'0'}));
+      } catch(e){}
+      renderSidebar();
+    }
+  } catch(e) { toast('Find failed: '+e.message,'err'); }
+}
+
+// ══════════════════════════════════════════════════
+// PROJECT SETTINGS — criteria + template + keywords
+// ══════════════════════════════════════════════════
+function toggleSettings() {
+  const sp = document.getElementById('settingsPanel');
+  if (sp.classList.contains('hidden')) openSettings();
+  else closeSettings();
+}
+
+function openSettings() {
+  const p = curProj();
+  if (!p) { toast('Select a project first','info'); return; }
+  closePanel();
+  document.getElementById('settingsPanel').classList.remove('hidden');
+  document.getElementById('spTitle').textContent = p.name+' Settings';
+
+  const cr = p.criteria || {};
+  const sizes  = ['small','medium','large','enterprise'];
+  const types  = ['brand','manufacturer','reseller','shop','software','agency','marketplace'];
+  const langs  = ['en','de','fr','nl','es','it','pl'];
+
+  document.getElementById('spBody').innerHTML = `
+    <div class="fld"><label>Project Name</label><input id="sp-name" value="${esc(p.name)}"></div>
+    <div class="fld"><label>Icon</label>
+      <div class="ip" id="sp-ip">
+        ${['🎨','🔩','🔧','🖨️','📦','🛒','💡','⚡','🎯','🚀','🌍','🧲'].map(ic=>
+          `<div class="ip-o${p.icon===ic?' sel':''}" onclick="pickIcon(this,'${ic}')">${ic}</div>`).join('')}
+        <input type="hidden" id="sp-icon" value="${p.icon}">
+      </div>
+    </div>
+
+    <div class="sp-sec">Lead Criteria</div>
+
+    <div class="fld"><label>Company Size</label>
+      <div class="crit-wrap">${sizes.map(s=>`<div class="crit-pill${(cr.companySize||[]).includes(s)?' on':''}" onclick="toggleCrit(this,'companySize','${s}')">${s}</div>`).join('')}</div>
+      <div style="font-size:10px;color:var(--g5);margin-top:3px">What size companies should we target?</div>
+    </div>
+
+    <div class="fld"><label>Business Type</label>
+      <div class="crit-wrap">${types.map(t=>`<div class="crit-pill${(cr.businessType||[]).includes(t)?' on':''}" onclick="toggleCrit(this,'businessType','${t}')">${t}</div>`).join('')}</div>
+    </div>
+
+    <div class="fld"><label>Ships To / Region</label>
+      <input id="sp-ships" value="${esc(cr.shipsTo||'Europe')}" placeholder="e.g. Europe, Germany, Global">
+    </div>
+
+    <div class="fld"><label>Must have Instagram / social</label>
+      <div class="crit-wrap">
+        <div class="crit-pill${cr.hasSocial?' on':''}" id="crit-social-yes" onclick="setCritBool('hasSocial',true,this)">Yes</div>
+        <div class="crit-pill${!cr.hasSocial?' on':''}" id="crit-social-no" onclick="setCritBool('hasSocial',false,this)">No preference</div>
+      </div>
+    </div>
+
+    <div class="fld"><label>Does creator collabs</label>
+      <div class="crit-wrap">
+        <div class="crit-pill${cr.collab?' on':''}" id="crit-collab-yes" onclick="setCritBool('collab',true,this)">Yes — filter for it</div>
+        <div class="crit-pill${!cr.collab?' on':''}" id="crit-collab-no" onclick="setCritBool('collab',false,this)">No preference</div>
+      </div>
+    </div>
+
+    <div class="fld"><label>Website Language</label>
+      <div class="crit-wrap">${langs.map(l=>`<div class="crit-pill${(cr.language||[]).includes(l)?' on':''}" onclick="toggleCrit(this,'language','${l}')">${l.toUpperCase()}</div>`).join('')}</div>
+    </div>
+
+    <div class="fld"><label>Exclude if snippet contains</label>
+      <input id="sp-avoid" value="${esc((cr.avoidKeywords||[]).join(', '))}" placeholder="e.g. alibaba, dropship, wholesale only">
+      <div style="font-size:10px;color:var(--g5);margin-top:2px">Comma-separated words. Leads matching these are dropped.</div>
+    </div>
+
+    <div class="sp-sec">Lead Search</div>
+    <div class="fld"><label>Keywords (one per line)</label>
+      <textarea id="sp-kw" rows="4">${(p.keywords||[]).join('\n')}</textarea>
+    </div>
+    <div class="fld"><label>Location / Region</label>
+      <input id="sp-loc" value="${esc(p.location||'Europe')}">
+    </div>
+    <div class="fld"><label>Max leads per run</label>
+      <select id="sp-max">${[5,10,20,50].map(n=>`<option value="${n}"${p.maxLeads===n?' selected':''}>${n}</option>`).join('')}</select>
+    </div>
+    <div class="fld"><label>Min relevance score (1–10)</label>
+      <input id="sp-score" type="number" min="1" max="10" value="${p.minScore||5}">
+    </div>
+
+    <div class="sp-sec">Email Template</div>
+    <div class="fld"><label>Your pitch brief</label>
+      <textarea id="sp-brief" rows="6">${esc(p.emailBrief||'')}</textarea>
+    </div>
+  `;
+}
+
+// criteria toggle helpers — operate on temp DOM state read at save time
+const _critState = {}; // projectId → criteria object (live edit)
+function ensureCritState() {
+  const p = curProj(); if(!p) return;
+  if (!_critState[p.id]) _critState[p.id] = JSON.parse(JSON.stringify(p.criteria||{}));
+}
+
+function toggleCrit(el, field, val) {
+  ensureCritState(); const p = curProj();
+  let arr = _critState[p.id][field] = _critState[p.id][field] || [];
+  if (arr.includes(val)) { arr.splice(arr.indexOf(val),1); el.classList.remove('on'); }
+  else { arr.push(val); el.classList.add('on'); }
+}
+
+function setCritBool(field, val, el) {
+  ensureCritState(); const p = curProj();
+  _critState[p.id][field] = val;
+  // toggle sibling pills
+  el.closest('.crit-wrap').querySelectorAll('.crit-pill').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function pickIcon(el, ic) {
+  document.querySelectorAll('#sp-ip .ip-o').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById('sp-icon').value=ic;
+}
+
+function saveSettings() {
+  const p = curProj(); if(!p) return;
+  p.name = document.getElementById('sp-name').value.trim() || p.name;
+  p.icon = document.getElementById('sp-icon').value;
+  p.keywords = document.getElementById('sp-kw').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  p.location = document.getElementById('sp-loc').value.trim();
+  p.maxLeads = parseInt(document.getElementById('sp-max').value)||10;
+  p.minScore = parseInt(document.getElementById('sp-score').value)||5;
+  p.emailBrief = document.getElementById('sp-brief').value.trim();
+  // merge criteria from live state + form fields
+  const cr = _critState[p.id] || p.criteria || {};
+  cr.shipsTo = document.getElementById('sp-ships').value.trim();
+  cr.avoidKeywords = document.getElementById('sp-avoid').value.split(',').map(s=>s.trim()).filter(Boolean);
+  p.criteria = cr;
+  saveProjects();
+  document.getElementById('phName').textContent = p.name;
+  document.getElementById('phIcon').textContent = p.icon;
+  document.getElementById('tbProj').textContent = p.name;
+  renderSidebar();
+  toast('Settings saved','ok');
+}
+
+function closeSettings() { document.getElementById('settingsPanel').classList.add('hidden'); }
+
+// ══════════════════════════════════════════════════
+// ADD PROJECT MODAL
+// ══════════════════════════════════════════════════
+let _newIcon = '📋';
+function openAddProject() {
+  _newIcon = '📋';
+  document.getElementById('modalTitle').textContent = 'New Project';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="fld"><label>Project Name *</label><input id="np-name" placeholder="e.g. Filament Brands DE"></div>
+    <div class="fld"><label>Icon</label>
+      <div class="ip">
+        ${['🎨','🔩','🔧','🖨️','📦','🛒','💡','⚡','🎯','🚀','🌍','🧲'].map((ic,i)=>
+          `<div class="ip-o${i===0?' sel':''}" onclick="pickModalIcon(this,'${ic}')">${ic}</div>`).join('')}
+      </div>
+    </div>
+    <div class="fld"><label>Keywords (one per line)</label><textarea id="np-kw" rows="3" placeholder="filament brand Germany\nPLA PETG manufacturer EU"></textarea></div>
+    <div class="fld"><label>Location</label><input id="np-loc" value="Europe"></div>
+    <div class="fld"><label>Email Brief</label><textarea id="np-brief" rows="3" placeholder="Describe your pitch angle for this project…"></textarea></div>
+  `;
+  document.getElementById('modalFoot').innerHTML = `
+    <button class="mfb ghost" onclick="closeModal()">Cancel</button>
+    <button class="mfb primary" onclick="addProject()">Create</button>`;
+  document.getElementById('ov').classList.add('on');
+}
+
+function pickModalIcon(el, ic) {
+  document.querySelectorAll('#ov .ip-o').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel'); _newIcon=ic;
+}
+
+function addProject() {
+  const name = document.getElementById('np-name').value.trim();
+  if (!name) { toast('Name required','err'); return; }
+  const id = name.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now();
+  projects.push({ id, name, icon:_newIcon,
+    keywords: document.getElementById('np-kw').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    location: document.getElementById('np-loc').value.trim()||'Europe',
+    criteria:{ companySize:['small','medium'], businessType:['brand'], collab:false, shipsTo:'Europe', hasSocial:false, avoidKeywords:[], language:['en'] },
+    emailBrief: document.getElementById('np-brief').value.trim(),
+    maxLeads:10, minScore:5
+  });
+  saveProjects(); contacts[id]=[]; renderSidebar(); closeModal();
+  selectProject(id); toast(`"${name}" created`,'ok');
+}
+
+// ══════════════════════════════════════════════════
 // ADD CONTACT MODAL
-// ═══════════════════════════════════════════════════
-function openAddModal() { document.getElementById('ov').classList.add('on'); document.getElementById('mName').focus(); }
-function closeModal() { document.getElementById('ov').classList.remove('on'); }
-function toggleCat(el, cat) { document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); selectedCat=cat; }
+// ══════════════════════════════════════════════════
+let _addCat = 'Brand';
+function openAddContact() {
+  if (!currentPid) { toast('Select a project first','info'); return; }
+  document.getElementById('modalTitle').textContent = 'Add Contact';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="fld"><label>Brand *</label><input id="ac-brand" placeholder="e.g. eSUN"></div>
+    <div class="fld"><label>Name</label><input id="ac-name" placeholder="Marketing Team"></div>
+    <div class="fld"><label>Email *</label><input type="email" id="ac-email" placeholder="contact@brand.com"></div>
+    <div class="fld"><label>Category</label>
+      <div class="cat-chips">
+        ${['Brand','Shop','Software','Reseller','Other'].map((c,i)=>
+          `<div class="cc${i===0?' sel':''}" onclick="setAddCat(this,'${c}')">${c}</div>`).join('')}
+      </div>
+    </div>
+    <div class="fld"><label>Context / snippet</label><textarea id="ac-snip" rows="2" placeholder="Paste a sentence from their website — Claude uses this to personalise the email"></textarea></div>
+  `;
+  document.getElementById('modalFoot').innerHTML = `
+    <button class="mfb ghost" onclick="closeModal()">Cancel</button>
+    <button class="mfb primary" id="acBtn" onclick="addContact()">Add Contact</button>`;
+  document.getElementById('ov').classList.add('on');
+  setTimeout(()=>document.getElementById('ac-brand').focus(),50);
+}
+
+function setAddCat(el,cat) { document.querySelectorAll('#ov .cc').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); _addCat=cat; }
 
 async function addContact() {
-  const name=document.getElementById('mName').value.trim(), brand=document.getElementById('mBrand').value.trim(), email=document.getElementById('mEmail').value.trim();
-  if(!name||!brand||!email){toast('Name, Brand, Email required','err');return;}
-  const btn=document.getElementById('addBtn'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>';
+  const brand=document.getElementById('ac-brand').value.trim(), email=document.getElementById('ac-email').value.trim();
+  if (!brand||!email){toast('Brand + Email required','err');return;}
+  const btn=document.getElementById('acBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
   try {
-    await api({ action:'add_contact', name, brand, email, instagram:document.getElementById('mInstagram').value.trim(), category:selectedCat, notes:document.getElementById('mNotes').value.trim() });
-    toast('Contact added!','ok'); closeModal();
-    ['mName','mBrand','mEmail','mInstagram','mNotes'].forEach(id=>document.getElementById(id).value='');
-    await loadContacts();
-  } catch(e) { toast('Add failed','err'); }
-  btn.disabled=false; btn.textContent='Add Contact';
+    await api({action:'add_contact',projectId:currentPid,brand,name:document.getElementById('ac-name').value.trim(),email,category:_addCat,snippet:document.getElementById('ac-snip').value.trim()});
+    toast('Added!','ok');closeModal();await loadContacts();
+  } catch(e){toast('Failed','err');}
+  btn.disabled=false;btn.textContent='Add Contact';
 }
 
-// ═══════════════════════════════════════════════════
-// TEMPLATE
-// ═══════════════════════════════════════════════════
-function selectTpl(key) {
-  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('tpl-'+key)?.classList.add('sel');
-  if(key!=='custom') document.getElementById('tplText').value=TEMPLATES[key];
+function closeModal() { document.getElementById('ov').classList.remove('on'); }
+
+// ══════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════
+async function api(payload) {
+  const res = await fetch(N8N,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true});
+  if (!res.ok) throw new Error('HTTP '+res.status);
+  return res.json();
 }
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 let _tt;
-function toast(msg,type){const el=document.getElementById('toast');el.className='on '+(type||'info');el.innerHTML=(type==='ok'?'✓ ':type==='err'?'✕ ':'')+msg;clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3200);}
+function toast(msg,type){const el=document.getElementById('toast');el.className='on '+(type||'info');el.textContent=(type==='ok'?'✓ ':type==='err'?'✕ ':'')+msg;clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),3000);}
 
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closePanel();}});
+// ══════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closePanel();closeSettings();}});
 document.getElementById('ov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-renderKeywords();
-loadContacts();
+pplxApiKey = localStorage.getItem('mm_pplx')||'';
+serpApiKey  = localStorage.getItem('mm_serp')||'';
+renderSidebar();
+if(projects.length) selectProject(projects[0].id);
 </script>
 </body>
 </html>
