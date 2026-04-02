@@ -249,12 +249,16 @@ tr:hover .ra-wrap{opacity:1;}
     <!-- API keys in sidebar bottom -->
     <div style="padding:10px 13px;border-top:1px solid var(--g2);display:flex;flex-direction:column;gap:6px;">
       <div class="api-key-row">
-        <label>Perplexity API Key</label>
-        <input type="password" id="pplxKey" placeholder="pplx-…" oninput="pplxApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_pplx',this.value)">
+        <label>Anthropic API Key</label>
+        <input type="password" id="anthropicKeyInput" placeholder="sk-ant-…" oninput="anthropicApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_anthropic',this.value)">
       </div>
       <div class="api-key-row">
         <label>SerpAPI Key</label>
         <input type="password" id="serpKeyInput" placeholder="sk-…" oninput="serpApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_serp',this.value)">
+      </div>
+      <div class="api-key-row">
+        <label>Perplexity API Key</label>
+        <input type="password" id="pplxKey" placeholder="pplx-…" oninput="pplxApiKey=this.value" onfocus="this.type='text'" onblur="this.type='password';localStorage.setItem('mm_pplx',this.value)">
       </div>
     </div>
   </div>
@@ -353,6 +357,7 @@ tr:hover .ra-wrap{opacity:1;}
 // ══════════════════════════════════════════════════
 const N8N = 'https://meshminds.app.n8n.cloud/webhook/outreach-bot';
 let pplxApiKey = localStorage.getItem('mm_pplx') || '';
+let anthropicApiKey = localStorage.getItem('mm_anthropic') || '';
 let serpApiKey  = localStorage.getItem('mm_serp')  || '';
 
 // ══════════════════════════════════════════════════
@@ -360,56 +365,29 @@ let serpApiKey  = localStorage.getItem('mm_serp')  || '';
 // ══════════════════════════════════════════════════
 const DEFAULT_PROJECTS = [
   {
-    id: 'filament', name: 'Filament Brands', icon: '🎨',
-    keywords: ['filament brand 3D printing EU', 'PLA PETG filament manufacturer Germany', 'Bambu Lab compatible filament'],
-    location: 'Europe',
-    // Lead criteria
-    criteria: {
-      companySize: ['small','medium'],          // small / medium / large / enterprise
-      businessType: ['brand','manufacturer'],   // brand / manufacturer / reseller / shop / software / agency
-      collab: true,                             // only brands that do influencer collabs
-      shipsTo: 'Europe',                        // shipping region
-      hasSocial: true,                          // must have Instagram/social
-      avoidKeywords: ['alibaba','dropship'],    // exclude if these appear in research
-      minFollowers: '',                         // their own follower requirement (empty = any)
-      language: ['en','de'],                    // preferred site language
-    },
-    emailBrief: "I'm Daniel from @meshminds3d — 85K followers focused on making money with 3D printing on a Bambu Lab A1. I'd love to review your filament and create authentic, high-converting content. My audience actively buys based on my recommendations.",
-    maxLeads: 10, minScore: 6
-  },
-  {
-    id: 'accessories', name: 'Accessories Shops', icon: '🔩',
-    keywords: ['3D printer accessories shop EU', 'print farm supplies shop', '3D printing upgrades parts store'],
+    id: 'filament-brands',
+    name: 'Filament Brands',
+    icon: '🎨',
+    keywords: [
+      'filament brand 3D printing EU',
+      'PLA PETG filament manufacturer Europe',
+      'Bambu Lab compatible filament brand',
+      'filament hersteller Deutschland',
+      '3D printing filament sponsor creator'
+    ],
     location: 'Europe',
     criteria: {
-      companySize: ['small','medium','large'],
-      businessType: ['shop','reseller'],
-      collab: false,
+      companySize: ['small','medium'],
+      businessType: ['brand','manufacturer'],
+      collab: true,
       shipsTo: 'Europe',
-      hasSocial: false,
-      avoidKeywords: [],
-      minFollowers: '',
+      hasSocial: true,
+      avoidKeywords: ['alibaba','dropship','wholesale only','no retail'],
       language: ['en','de'],
     },
-    emailBrief: "I'm Daniel from @meshminds3d — 85K followers in 3D printing. I create weekly content showing how to monetize printing. I'd love to feature your accessories in a dedicated reel or carousel and drive real traffic to your store.",
-    maxLeads: 10, minScore: 5
-  },
-  {
-    id: 'software', name: '3D Printing Tools', icon: '🔧',
-    keywords: ['3D printing software tool', 'slicer plugin 3D printing', '3D print management platform'],
-    location: 'Global',
-    criteria: {
-      companySize: ['small','medium','large','enterprise'],
-      businessType: ['software','brand'],
-      collab: false,
-      shipsTo: 'Global',
-      hasSocial: false,
-      avoidKeywords: ['free only','open source only'],
-      minFollowers: '',
-      language: ['en'],
-    },
-    emailBrief: "I'm Daniel from @meshminds3d — 85K followers who trust my tool picks. I create in-depth tutorials. I'd love to feature your software in a dedicated tutorial showing my audience exactly how it improves their workflow.",
-    maxLeads: 10, minScore: 6
+    emailBrief: "Hi, I'm Daniel — I run @meshminds3d on Instagram and TikTok with 85K followers focused entirely on making money with 3D printing. I print daily on a Bambu Lab A1 and my audience is highly engaged and purchase-driven.\n\nI'm reaching out because I think your filament would be a great fit for a collaboration — whether that's an honest review reel, a sponsored carousel, or a longer-term partnership. My viewers trust my material recommendations and actively buy based on what I test.\n\nHappy to share my media kit if useful.",
+    maxLeads: 10,
+    minScore: 6
   }
 ];
 
@@ -447,6 +425,7 @@ function renderSidebar() {
   // restore API key inputs
   document.getElementById('pplxKey').value = pplxApiKey;
   document.getElementById('serpKeyInput').value = serpApiKey;
+  const ak = document.getElementById('anthropicKeyInput'); if(ak) ak.value = anthropicApiKey;
 }
 
 // ══════════════════════════════════════════════════
@@ -480,35 +459,14 @@ async function loadContacts() {
       }
     });
   } catch(e) {
-    contacts[currentPid] = getDemoContacts(currentPid);
+    contacts[currentPid] = []; // load from sheet only
   }
   renderHeader();
   renderTable();
   renderSidebar();
 }
 
-function getDemoContacts(pid) {
-  const map = {
-    filament: [
-      { _row:2, Brand:'Polymaker', Name:'Marketing Team', Email:'collab@polymaker.com', Status:'Pending', Score:'8', Enriched:true, EnrichSummary:'Award-winning specialty filament brand. Active with creators on Instagram. Ships EU. ~50 employees. Runs regular creator campaigns.', EnrichTags:'EU shipping,Creator collabs,Instagram active,Medium brand', 'Emails Sent':'0', 'Last Contact':'' },
-      { _row:3, Brand:'eSUN', Name:'Marketing', Email:'marketing@esun3d.com', Status:'Sent', Score:'7', Enriched:true, EnrichSummary:'One of the largest filament OEMs. Bambu community staple. Has worked with YouTubers before. Global shipping.', EnrichTags:'Global shipping,Large brand,Creator friendly,Bambu compatible', 'Emails Sent':'1', 'Last Contact':'2025-03-15' },
-      { _row:4, Brand:'Bambu Lab EU', Name:'Creator Team', Email:'creator@bambulabeu.com', Status:'Interested', Score:'10', Enriched:true, EnrichSummary:'Official EU distributor. Actively seeks 3D printing creators. Sends hardware for review regularly. Very relevant.', EnrichTags:'EU,Hardware sends,Creator program,High priority', 'Emails Sent':'2', 'Last Contact':'2025-03-25' },
-    ],
-    accessories: [
-      { _row:2, Brand:'3DJake', Name:'Partner Team', Email:'partner@3djake.com', Status:'Replied', Score:'9', Enriched:true, EnrichSummary:"Europe's biggest 3D printing shop. Affiliate program available. Active socials. Responsive to creator outreach.", EnrichTags:'EU,Affiliate program,Shop,High priority', 'Emails Sent':'1', 'Last Contact':'2025-03-20' },
-      { _row:3, Brand:'Printed Solid', Name:'Marketing', Email:'hi@printedsolid.com', Status:'Pending', Score:'6', Enriched:false, EnrichSummary:'', EnrichTags:'', 'Emails Sent':'0', 'Last Contact':'' },
-    ],
-    software: [
-      { _row:2, Brand:'Orca Slicer', Name:'Team', Email:'hi@orcaslicer.io', Status:'Pending', Score:'6', Enriched:true, EnrichSummary:'Popular open-source slicer fork. Community-driven. Free tool — collab potential limited but exposure possible.', EnrichTags:'Open source,Free,Community driven,Software', 'Emails Sent':'0', 'Last Contact':'' },
-    ]
-  };
-  // seed a demo email log
-  emailLogs['creator@bambulabeu.com'] = [
-    { date:'2025-03-10', subject:'Collab idea for @meshminds3d × Bambu Lab EU 🖨️', body:'Hey — I\'m Daniel, running @meshminds3d with 85K followers in the 3D printing space.\n\nI use a Bambu Lab A1 daily and my audience is deeply engaged with Bambu hardware. I think we could do something really authentic together — whether that\'s a printer review, a sponsored reel, or a bundle giveaway.\n\nWould love to connect and explore what makes sense.\n\nDaniel\n@meshminds3d' },
-    { date:'2025-03-20', subject:'Following up — @meshminds3d × Bambu Lab EU', body:'Hey again — just wanted to follow up on my last message. We just hit 85K and engagement has been strong lately. Happy to share our media kit if useful.\n\nDaniel' }
-  ];
-  return map[pid] || [];
-}
+function getDemoContacts() { return []; }
 
 // ══════════════════════════════════════════════════
 // HEADER STATS
@@ -756,7 +714,7 @@ async function runBatch() {
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Running…';
   toast('Sending batch…','info');
   try {
-    const data = await api({ action:'run_batch', projectId:currentPid, emailBrief:p.emailBrief });
+    const data = await api({ action:'run_batch', projectId:currentPid, emailBrief:p.emailBrief, anthropicKey:anthropicApiKey||undefined });
     toast(`✅ ${data.sent||0} emails sent`,'ok');
     await loadContacts();
   } catch(e) { toast('Batch failed: '+e.message,'err'); }
@@ -1055,6 +1013,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeP
 document.getElementById('ov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 pplxApiKey = localStorage.getItem('mm_pplx')||'';
 serpApiKey  = localStorage.getItem('mm_serp')||'';
+anthropicApiKey = localStorage.getItem('mm_anthropic')||'';
 renderSidebar();
 if(projects.length) selectProject(projects[0].id);
 </script>
