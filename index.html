@@ -217,6 +217,28 @@ tr:hover .ra-wrap{opacity:1;}
 #toast.err{border-left:3px solid var(--red);}
 #toast.info{border-left:3px solid var(--or);}
 
+/* PROJECT ACTIONS */
+.proj-item{position:relative;}
+.proj-actions{display:none;position:absolute;right:36px;top:50%;transform:translateY(-50%);gap:3px;align-items:center;}
+.proj-item:hover .proj-actions{display:flex;}
+.pa-btn{width:22px;height:22px;border-radius:4px;border:1.5px solid var(--g2);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--g5);transition:all .12s;}
+.pa-btn:hover{border-color:var(--or);color:var(--or);}
+.pa-btn.del:hover{border-color:var(--red);color:var(--red);}
+.drag-handle{cursor:grab;color:var(--g4);font-size:13px;padding:0 3px;user-select:none;}
+.drag-handle:active{cursor:grabbing;}
+.proj-item.dragging{opacity:.4;}
+.proj-item.drag-over{border-top:2px solid var(--or);}
+.proj-item.archived{opacity:.5;}
+/* KPI BAR */
+.kpi-bar{display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid var(--g2);background:#fafafa;flex-shrink:0;}
+.kpi{flex:1;background:#fff;border:1.5px solid var(--g2);border-radius:7px;padding:8px 10px;text-align:center;}
+.kpi .kv{font-size:20px;font-weight:800;font-family:'Bebas Neue';letter-spacing:1px;color:var(--bk);}
+.kpi .kv.or{color:var(--or);}
+.kpi .kv.gr{color:var(--green);}
+.kpi .kl{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--g5);text-transform:uppercase;margin-top:1px;}
+/* ARCHIVE LABEL */
+.arch-badge{font-size:9px;font-weight:700;background:var(--g2);color:var(--g5);padding:1px 5px;border-radius:3px;margin-left:5px;text-transform:uppercase;}
+
 /* spinner */
 .spin{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;animation:sp .7s linear infinite;flex-shrink:0;vertical-align:middle;}
 .spin.dk{border-color:rgba(0,0,0,.1);border-top-color:var(--or);}
@@ -292,6 +314,7 @@ tr:hover .ra-wrap{opacity:1;}
       <button class="xb ghost sm" onclick="loadContacts()">↻</button>
     </div>
 
+    <div id="kpiBar" class="kpi-bar" style="display:none"></div>
     <div id="tableWrap">
       <table>
         <thead>
@@ -408,16 +431,31 @@ function curContacts() { return contacts[currentPid] || []; }
 // SIDEBAR
 // ══════════════════════════════════════════════════
 function renderSidebar() {
-  document.getElementById('projList').innerHTML = projects.map(p => {
+  document.getElementById('projList').innerHTML = projects.map((p,i) => {
     const cs = contacts[p.id] || [];
     const sent = cs.filter(c => ['Sent','Replied','Interested'].includes(c.Status)).length;
+    const replied = cs.filter(c => ['Replied','Interested'].includes(c.Status)).length;
     const pending = cs.filter(c => c.Status === 'Pending').length;
-    return `<div class="proj-item${p.id===currentPid?' active':''}" onclick="selectProject('${p.id}')">
-      <div class="pi-name"><span>${p.icon}</span>${p.name}</div>
+    const rate = sent > 0 ? Math.round(replied/sent*100) : 0;
+    return `<div class="proj-item${p.id===currentPid?' active':''}${p.archived?' archived':''}"
+      draggable="true"
+      ondragstart="dragStart(event,'${p.id}')"
+      ondragover="dragOver(event)"
+      ondrop="dragDrop(event,'${p.id}')"
+      ondragleave="dragLeave(event)"
+      ondragend="dragEnd(event)"
+      onclick="selectProject('${p.id}')">
+      <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+      <div class="pi-name"><span>${p.icon}</span>${p.name}${p.archived?'<span class="arch-badge">archived</span>':''}</div>
       <div class="pi-stats">
         <div class="pis"><span class="v">${cs.length}</span> total</div>
         <div class="pis"><span class="v or">${pending}</span> pending</div>
         <div class="pis"><span class="v gr">${sent}</span> sent</div>
+        ${rate > 0 ? `<div class="pis"><span class="v" style="color:#6366f1">${rate}%</span> replied</div>` : ''}
+      </div>
+      <div class="proj-actions">
+        <div class="pa-btn" onclick="event.stopPropagation();archiveProject('${p.id}')" title="${p.archived?'Unarchive':'Archive'}">${p.archived?'↑':'📁'}</div>
+        <div class="pa-btn del" onclick="event.stopPropagation();deleteProject('${p.id}')" title="Delete">✕</div>
       </div>
       <button class="pi-find" id="pif-${p.id}" onclick="event.stopPropagation();quickFind('${p.id}')" title="Find 10 new leads">+10</button>
     </div>`;
@@ -753,7 +791,11 @@ async function _findLeads(pid) {
       action:'find_leads', projectId:pid,
       keywords:p.keywords, location:p.location,
       criteria:p.criteria,
+      emailBrief:p.emailBrief||undefined,
+      emailExtraInfo:p.emailExtraInfo||undefined,
+      notes:p.notes||undefined,
       maxResults:p.maxLeads||10, minScore:p.minScore||5,
+      anthropicKey:anthropicApiKey||undefined,
       serpKey:serpApiKey||undefined, pplxKey:pplxApiKey||undefined,
       usePplx: !!pplxApiKey
     });
@@ -793,6 +835,7 @@ function openSettings() {
 
   document.getElementById('spBody').innerHTML = `
     <div class="fld"><label>Project Name</label><input id="sp-name" value="${esc(p.name)}"></div>
+    <div class="fld"><label>Project ID <span style="font-weight:400;color:var(--g5)">(use this to tag contacts in Sheets)</span></label><div style="font-family:'DM Mono';font-size:11px;background:var(--g1);border:1.5px solid var(--g2);border-radius:5px;padding:6px 8px;color:var(--g7);user-select:all">${p.id}</div></div>
     <div class="fld"><label>Icon</label>
       <div class="ip" id="sp-ip">
         ${['🎨','🔩','🔧','🖨️','📦','🛒','💡','⚡','🎯','🚀','🌍','🧲'].map(ic=>
@@ -861,7 +904,12 @@ function openSettings() {
       <textarea id="sp-extrainfo" rows="4" placeholder="Paste links, stats, product names, or any context you want included in every email for this project…">${esc(p.emailExtraInfo||'')}</textarea>
       <div style="font-size:10px;color:var(--g5);margin-top:3px">Claude will weave this into each personalised email.</div>
     </div>
-  `;
+
+    <div class="sp-sec">Project Notes</div>
+    <div class="fld"><label>Notes <span style="font-weight:400;color:var(--g5)">(used in research + email)</span></label>
+      <textarea id="sp-notes" rows="3" placeholder="e.g. Focus on brands that ship to Germany. Avoid brands under 2 years old.">${esc(p.notes||'')}</textarea>
+    </div>
+  \`;
 }
 
 // criteria toggle helpers — operate on temp DOM state read at save time
@@ -901,6 +949,7 @@ function saveSettings() {
   p.minScore = parseInt(document.getElementById('sp-score').value)||5;
   p.emailBrief = document.getElementById('sp-brief').value.trim();
   p.emailExtraInfo = document.getElementById('sp-extrainfo')?.value?.trim() || '';
+  p.notes = document.getElementById('sp-notes')?.value?.trim() || '';
   // merge criteria from live state + form fields
   const cr = _critState[p.id] || p.criteria || {};
   cr.shipsTo = document.getElementById('sp-ships').value.trim();
@@ -915,6 +964,71 @@ function saveSettings() {
 }
 
 function closeSettings() { document.getElementById('settingsPanel').classList.add('hidden'); }
+
+// ══════════════════════════════════════════════════
+// PROJECT MANAGEMENT — delete, archive, drag-sort
+// ══════════════════════════════════════════════════
+function deleteProject(id) {
+  const p = getProj(id);
+  if (!confirm('Delete "'+p.name+'"? Contacts in Google Sheets will not be deleted.')) return;
+  projects = projects.filter(pr => pr.id !== id);
+  delete contacts[id];
+  saveProjects();
+  if (currentPid === id) {
+    currentPid = null;
+    document.getElementById('phName').textContent = 'Select a project';
+    document.getElementById('phSub').textContent = 'Choose a project from the sidebar';
+    document.getElementById('kpiBar').style.display = 'none';
+    renderTable();
+  }
+  renderSidebar();
+  toast('"'+p.name+'" deleted','ok');
+}
+
+function archiveProject(id) {
+  const p = getProj(id);
+  p.archived = !p.archived;
+  saveProjects();
+  renderSidebar();
+  toast(p.archived ? '"'+p.name+'" archived' : '"'+p.name+'" unarchived','ok');
+}
+
+// ── drag to reorder ──
+let _dragId = null;
+function dragStart(e, id) { _dragId = id; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; }
+function dragEnd(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('.proj-item').forEach(el=>el.classList.remove('drag-over')); }
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect='move'; e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragDrop(e, targetId) {
+  e.preventDefault();
+  if (_dragId === targetId) return;
+  const fromIdx = projects.findIndex(p => p.id === _dragId);
+  const toIdx   = projects.findIndex(p => p.id === targetId);
+  const [moved] = projects.splice(fromIdx, 1);
+  projects.splice(toIdx, 0, moved);
+  saveProjects();
+  renderSidebar();
+}
+
+// ── KPI bar ──
+function renderKpis() {
+  const bar = document.getElementById('kpiBar');
+  if (!currentPid) { bar.style.display='none'; return; }
+  const cs = curContacts();
+  const total = cs.length;
+  const sent = cs.filter(c => ['Sent','Replied','Interested'].includes(c.Status)).length;
+  const replied = cs.filter(c => ['Replied','Interested'].includes(c.Status)).length;
+  const interested = cs.filter(c => c.Status === 'Interested').length;
+  const rate = sent > 0 ? Math.round(replied/sent*100) : 0;
+  bar.style.display = 'flex';
+  bar.innerHTML = `
+    <div class="kpi"><div class="kv">${total}</div><div class="kl">Total Leads</div></div>
+    <div class="kpi"><div class="kv or">${sent}</div><div class="kl">Sent</div></div>
+    <div class="kpi"><div class="kv" style="color:#6366f1">${replied}</div><div class="kl">Replied</div></div>
+    <div class="kpi"><div class="kv gr">${interested}</div><div class="kl">Interested</div></div>
+    <div class="kpi"><div class="kv${rate>0?' or':''}">${rate}%</div><div class="kl">Reply Rate</div></div>
+  `;
+}
 
 // ══════════════════════════════════════════════════
 // ADD PROJECT MODAL
