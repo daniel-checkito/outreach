@@ -527,7 +527,7 @@ function renderTable() {
     const hasEmails = emailCount > 0;
     return `<tr onclick="openContact(${idx})" style="cursor:pointer">
       <td onclick="event.stopPropagation()"><input type="checkbox"></td>
-      <td><strong>${c.Brand||'—'}</strong><div class="mono" style="margin-top:1px">${c.Name||''}</div></td>
+      <td><strong>${(c.Url||c._raw_url) ? `<a href="${c.Url||c._raw_url}" target="_blank" style="color:var(--bk);text-decoration:none" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--bk)'">${c.Brand||'—'} ↗</a>` : (c.Brand||'—')}</strong><div class="mono" style="margin-top:1px">${c.Name||''}</div></td>
       <td class="mono">${c.Email||'—'}</td>
       <td>${enrichBadge}<div class="snippet-cell" style="margin-top:2px" title="${esc(c.EnrichSummary||c.Snippet||'')}">${c.EnrichSummary||c.Snippet||'—'}</div></td>
       <td><span class="score ${scCls}">${c.Score||'—'}</span></td>
@@ -582,6 +582,12 @@ function openContact(idx, goEmails=false) {
       <select onchange="curContacts()[${idx}].Status=this.value;renderTable();renderHeader();renderSidebar()">
         ${['Pending','Sent','Replied','Interested','Skipped'].map(s=>`<option ${c.Status===s?'selected':''}>${s}</option>`).join('')}
       </select>
+    </div>
+    <div class="fld"><label>Website URL</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input value="${esc(c.Url||c._raw_url||'')}" oninput="curContacts()[${idx}].Url=this.value" style="flex:1" placeholder="https://…">
+        ${(c.Url||c._raw_url) ? `<a href="${esc(c.Url||c._raw_url||'')}" target="_blank" style="padding:5px 8px;border:1.5px solid var(--g2);border-radius:5px;font-size:11px;font-weight:700;color:var(--g5);text-decoration:none;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor='var(--or)';this.style.color='var(--or)'" onmouseout="this.style.borderColor='var(--g2)';this.style.color='var(--g5)'">Open ↗</a>` : ''}
+      </div>
     </div>
     ${c.Enriched ? `
     <div class="psec">Perplexity Research</div>
@@ -714,7 +720,7 @@ async function runBatch() {
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> Running…';
   toast('Sending batch…','info');
   try {
-    const data = await api({ action:'run_batch', projectId:currentPid, emailBrief:p.emailBrief, anthropicKey:anthropicApiKey||undefined });
+    const data = await api({ action:'run_batch', projectId:currentPid, emailBrief:p.emailBrief, emailExtraInfo:p.emailExtraInfo||undefined, anthropicKey:anthropicApiKey||undefined });
     toast(`✅ ${data.sent||0} emails sent`,'ok');
     await loadContacts();
   } catch(e) { toast('Batch failed: '+e.message,'err'); }
@@ -782,7 +788,7 @@ function openSettings() {
 
   const cr = p.criteria || {};
   const sizes  = ['small','medium','large','enterprise'];
-  const types  = ['brand','manufacturer','reseller','shop','software','agency','marketplace'];
+  const types  = ['product brand','online shop','manufacturer','software / app','marketplace'];
   const langs  = ['en','de','fr','nl','es','it','pl'];
 
   document.getElementById('spBody').innerHTML = `
@@ -802,8 +808,8 @@ function openSettings() {
       <div style="font-size:10px;color:var(--g5);margin-top:3px">What size companies should we target?</div>
     </div>
 
-    <div class="fld"><label>Business Type</label>
-      <div class="crit-wrap">${types.map(t=>`<div class="crit-pill${(cr.businessType||[]).includes(t)?' on':''}" onclick="toggleCrit(this,'businessType','${t}')">${t}</div>`).join('')}</div>
+    <div class="fld"><label>Business Type <span style="font-weight:400;color:var(--g5)">(leave empty = no preference)</span></label>
+      <div class="crit-wrap">${['product brand','online shop','manufacturer','software / app','marketplace'].map(t=>`<div class="crit-pill${(cr.businessType||[]).includes(t)?' on':''}" onclick="toggleCrit(this,'businessType','${t}')">${t}</div>`).join('')}</div>
     </div>
 
     <div class="fld"><label>Ships To / Region</label>
@@ -851,7 +857,11 @@ function openSettings() {
     <div class="fld"><label>Your pitch brief</label>
       <textarea id="sp-brief" rows="6">${esc(p.emailBrief||'')}</textarea>
     </div>
-  `;
+    <div class="fld"><label>Extra info for the email <span style="font-weight:400;color:var(--g5)">(optional)</span></label>
+      <textarea id="sp-extrainfo" rows="4" placeholder="Paste links, stats, product names, or any context you want included in every email for this project…">${esc(p.emailExtraInfo||'')}</textarea>
+      <div style="font-size:10px;color:var(--g5);margin-top:3px">Claude will weave this into each personalised email.</div>
+    </div>
+  \`;
 }
 
 // criteria toggle helpers — operate on temp DOM state read at save time
@@ -890,6 +900,7 @@ function saveSettings() {
   p.maxLeads = parseInt(document.getElementById('sp-max').value)||10;
   p.minScore = parseInt(document.getElementById('sp-score').value)||5;
   p.emailBrief = document.getElementById('sp-brief').value.trim();
+  p.emailExtraInfo = document.getElementById('sp-extrainfo')?.value?.trim() || '';
   // merge criteria from live state + form fields
   const cr = _critState[p.id] || p.criteria || {};
   cr.shipsTo = document.getElementById('sp-ships').value.trim();
