@@ -527,7 +527,7 @@ function renderTable() {
     const hasEmails = emailCount > 0;
     return `<tr onclick="openContact(${idx})" style="cursor:pointer">
       <td onclick="event.stopPropagation()"><input type="checkbox"></td>
-      <td><strong>${(c.Url||c._raw_url) ? `<a href="${c.Url||c._raw_url}" target="_blank" style="color:var(--bk);text-decoration:none" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--bk)'">${c.Brand||'—'} ↗</a>` : (c.Brand||'—')}</strong><div class="mono" style="margin-top:1px">${c.Name||''}</div></td>
+      <td><strong>${(c.Url||c._raw_url) ? '<a href="'+(c.Url||c._raw_url)+'" target="_blank" style="color:var(--bk);text-decoration:none" onmouseover="this.style.color=\'var(--or)\'" onmouseout="this.style.color=\'var(--bk)\'">'+(c.Brand||'—')+' ↗</a>' : (c.Brand||'—')}</strong><div class="mono" style="margin-top:1px">${c.Name||''}</div></td>
       <td class="mono">${c.Email||'—'}</td>
       <td>${enrichBadge}<div class="snippet-cell" style="margin-top:2px" title="${esc(c.EnrichSummary||c.Snippet||'')}">${c.EnrichSummary||c.Snippet||'—'}</div></td>
       <td><span class="score ${scCls}">${c.Score||'—'}</span></td>
@@ -586,7 +586,7 @@ function openContact(idx, goEmails=false) {
     <div class="fld"><label>Website URL</label>
       <div style="display:flex;gap:6px;align-items:center">
         <input value="${esc(c.Url||c._raw_url||'')}" oninput="curContacts()[${idx}].Url=this.value" style="flex:1" placeholder="https://…">
-        ${(c.Url||c._raw_url) ? `<a href="${esc(c.Url||c._raw_url||'')}" target="_blank" style="padding:5px 8px;border:1.5px solid var(--g2);border-radius:5px;font-size:11px;font-weight:700;color:var(--g5);text-decoration:none;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor='var(--or)';this.style.color='var(--or)'" onmouseout="this.style.borderColor='var(--g2)';this.style.color='var(--g5)'">Open ↗</a>` : ''}
+        ${(c.Url||c._raw_url) ? '<a href="'+esc(c.Url||c._raw_url||'')+'" target="_blank" style="padding:5px 8px;border:1.5px solid var(--g2);border-radius:5px;font-size:11px;font-weight:700;color:var(--g5);text-decoration:none;white-space:nowrap;transition:all .15s" onmouseover="this.style.borderColor=\'var(--or)\';this.style.color=\'var(--or)\'" onmouseout="this.style.borderColor=\'var(--g2)\';this.style.color=\'var(--g5)\'">Open ↗</a>' : ''}
       </div>
     </div>
     ${c.Enriched ? `
