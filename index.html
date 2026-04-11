@@ -328,10 +328,7 @@ tr.data-row:hover .ra-wrap{opacity:1;}
   <div class="tsep"></div>
   <span class="tb-proj" id="tbProj">Select a project</span>
   <div class="sp"></div>
-  <button class="xb ghost" onclick="exportCSV()">⬇ CSV</button>
-  <button class="xb ghost" onclick="openAddContact()">+ Contact</button>
-  <button class="xb ghost" onclick="toggleSettings()">⚙ Settings</button>
-  <button class="xb ghost" onclick="openKeysModal()">🔑 Keys</button>
+  <button class="xb ghost" onclick="openKeysModal()">🔑 API Keys</button>
 </div>
 
 <div id="app">
@@ -361,7 +358,11 @@ tr.data-row:hover .ra-wrap{opacity:1;}
           <div class="ph-name" id="phName">Select a project</div>
           <div class="ph-sub" id="phSub">Choose a project from the sidebar</div>
         </div>
-        <div style="display:flex;gap:5px;flex-shrink:0">
+        <div style="display:flex;gap:5px;flex-shrink:0;align-items:center">
+          <button class="xb ghost" onclick="openAddContact()" id="addContactBtn" disabled>+ Contact</button>
+          <button class="xb ghost" onclick="exportCSV()" id="csvBtn" disabled>⬇ CSV</button>
+          <button class="xb ghost" onclick="toggleSettings()" id="settingsBtn" disabled>⚙ Settings</button>
+          <div class="tsep"></div>
           <button class="xb ghost" id="findBtn" onclick="openFindModal()" disabled>🔍 Find Leads</button>
           <button class="xb primary" id="batchBtn" onclick="openBatchModal()" disabled>🚀 Send Batch</button>
         </div>
@@ -892,6 +893,9 @@ async function selectProject(id){
   document.getElementById('phSub').textContent=(p.keywords||[]).slice(0,2).join(' · ');
   document.getElementById('findBtn').disabled=false;
   document.getElementById('batchBtn').disabled=false;
+  document.getElementById('addContactBtn').disabled=false;
+  document.getElementById('csvBtn').disabled=false;
+  document.getElementById('settingsBtn').disabled=false;
   setFilter('all',false);
   updateQueueBadge();
   renderSidebar();
@@ -1120,6 +1124,11 @@ function openSettings(){
   document.getElementById('spTitle').textContent=p.name;
   const cr=p.criteria||{},sizes=['small','medium','large','enterprise'],langs=['en','de','fr','nl','es','it','pl'];
   document.getElementById('spBody').innerHTML=[
+    '<div style="background:rgba(255,107,0,.04);border:1.5px solid rgba(255,107,0,.2);border-radius:7px;padding:10px 12px;margin-bottom:4px">'+
+      '<div style="font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--g5);margin-bottom:4px">Project ID — paste this into your Google Sheet column N</div>'+
+      '<div style="font-family:\'DM Mono\';font-size:12px;font-weight:700;color:var(--or);word-break:break-all;cursor:pointer" onclick="navigator.clipboard.writeText(\''+esc(p.id)+'\').then(()=>toast(\'Copied!\',\'ok\'))" title="Click to copy">'+esc(p.id)+'</div>'+
+      '<div style="font-size:10px;color:var(--g5);margin-top:4px">Click to copy · Each contact\'s row must have this exact value in the Project Id column</div>'+
+    '</div>',
     field('Project Name','<input id="sp-name" value="'+esc(p.name)+'">'),
     '<div class="fld"><label>Icon</label><div class="ip">'+['🎨','🔩','🔧','🖨️','📦','🛒','💡','⚡','🎯','🚀','🌍','🧲'].map(ic=>'<div class="ip-o'+(p.icon===ic?' sel':'')+'" onclick="pickIcon(this,\''+ic+'\')">'+ic+'</div>').join('')+'<input type="hidden" id="sp-icon" value="'+esc(p.icon)+'"></div></div>',
     '<div class="sp-sec">Lead Search</div>',
